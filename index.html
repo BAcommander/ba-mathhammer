@@ -682,6 +682,54 @@
         .site-footer a { color: var(--accent); text-decoration: none; }
         .site-footer a:hover { text-decoration: underline; }
 
+        /* --- Panel Head Actions --- */
+        .panel-head-actions {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+        .preset-select {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            border-radius: 4px;
+            font-size: 12px;
+            font-family: 'Inter', sans-serif;
+            padding: 5px 8px;
+            max-width: 150px;
+            cursor: pointer;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .preset-select:focus { outline: none; border-color: var(--border-focus); }
+        .btn-preset-save {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+        .btn-preset-save:hover { border-color: var(--accent); color: var(--accent); }
+        .btn-preset-del {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 5px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+        .btn-preset-del:hover { border-color: var(--red); color: var(--red); }
+
         /* --- Clear Button --- */
         .btn-clear {
             background: none;
@@ -950,9 +998,13 @@
             /* Abilities: 2 columns */
             .abilities-list { grid-template-columns: repeat(2, 1fr); }
 
+            /* Panel head wraps on mobile */
+            .panel-head { padding: 10px 14px; flex-wrap: wrap; gap: 8px; }
+            .panel-head-actions { flex-wrap: wrap; gap: 4px; }
+            .preset-select { max-width: 120px; font-size: 11px; }
+
             /* Panels: tighter padding */
             .panel-body { padding: 14px; }
-            .panel-head { padding: 10px 14px; }
 
             /* Profile cards */
             .profile-card { padding: 12px; }
@@ -997,7 +1049,9 @@
             .field label { font-size: 10px; }
 
             .panel-body { padding: 10px; }
-            .panel-head { padding: 8px 10px; }
+            .panel-head { padding: 8px 10px; flex-direction: column; align-items: flex-start; gap: 8px; }
+            .panel-head-actions { width: 100%; }
+            .preset-select { flex: 1; min-width: 0; max-width: none; }
 
             .prob-bar-pct { font-size: 8px; }
             .prob-bar-label { font-size: 9px; }
@@ -1059,7 +1113,12 @@
         <div class="panel">
             <div class="panel-head attack">
                 <h2>Attacker</h2>
-                <button class="btn-clear" id="btn-clear-all">Clear Attackers</button>
+                <div class="panel-head-actions">
+                    <select class="preset-select" id="atk-preset-select"><option value="">-- Presets --</option></select>
+                    <button class="btn-preset-save" id="btn-save-atk-preset" title="Save current attacker as preset">Save</button>
+                    <button class="btn-preset-del" id="btn-del-atk-preset" title="Delete selected preset" style="display:none">Del</button>
+                    <button class="btn-clear" id="btn-clear-all">Clear</button>
+                </div>
             </div>
             <div class="panel-body">
                 <div class="field-row unit-name">
@@ -1104,7 +1163,12 @@
         <div class="panel">
             <div class="panel-head defend">
                 <h2>Defender</h2>
-                <button class="btn-clear" id="btn-clear-defender">Clear Defender</button>
+                <div class="panel-head-actions">
+                    <select class="preset-select" id="def-preset-select"><option value="">-- Presets --</option></select>
+                    <button class="btn-preset-save" id="btn-save-def-preset" title="Save current defender as preset">Save</button>
+                    <button class="btn-preset-del" id="btn-del-def-preset" title="Delete selected preset" style="display:none">Del</button>
+                    <button class="btn-clear" id="btn-clear-defender">Clear</button>
+                </div>
             </div>
             <div class="panel-body">
                 <div class="battlegroup-toggle">
