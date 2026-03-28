@@ -923,6 +923,85 @@
             font-weight: 600;
         }
         .menu-content a:hover { text-decoration: underline; }
+
+        /* --- Mobile Responsive --- */
+        @media (max-width: 768px) {
+            .wrap { padding: 16px 12px; }
+            .site-header .inner { padding: 0 12px; }
+
+            /* Hide header extras on mobile */
+            .header-stats { display: none; }
+            .header-links a:not(.yt-btn) { display: none; }
+            .header-links { gap: 10px; }
+
+            /* Stack panels vertically */
+            .calc-grid {
+                grid-template-columns: 1fr;
+                gap: 14px;
+            }
+
+            .page-title { font-size: 20px; }
+            .page-subtitle { font-size: 12px; margin-bottom: 16px; }
+
+            /* Stat input rows: 3+2 layout for 5-col, 3+3 for 6-col */
+            .field-row.cols-5 { grid-template-columns: repeat(3, 1fr); }
+            .field-row.cols-6 { grid-template-columns: repeat(3, 1fr); }
+
+            /* Abilities: 2 columns */
+            .abilities-list { grid-template-columns: repeat(2, 1fr); }
+
+            /* Panels: tighter padding */
+            .panel-body { padding: 14px; }
+            .panel-head { padding: 10px 14px; }
+
+            /* Profile cards */
+            .profile-card { padding: 12px; }
+
+            /* Results */
+            .results-body { padding: 14px; }
+            .outcome-box { padding: 14px; }
+            .big-stat { font-size: 13px; }
+            .big-stat .r-val { font-size: 14px; }
+
+            /* Probability chart */
+            .prob-chart { height: 90px; }
+            .cum-grid { grid-template-columns: 1fr; }
+
+            /* Log dropdown full width */
+            .log-dropdown { width: calc(100vw - 24px); right: -12px; }
+
+            /* Copy buttons */
+            .copy-btns { top: 8px; right: 8px; }
+
+            /* Buttons */
+            .btn-calc { padding: 12px; font-size: 13px; }
+            .btn-row { flex-direction: column; gap: 6px; }
+
+            /* Health bars */
+            .m-bar { min-width: 18px; height: 20px; }
+            .m-bar-pct { font-size: 8px; line-height: 20px; }
+        }
+
+        @media (max-width: 420px) {
+            .wrap { padding: 12px 8px; }
+            .site-header .inner { padding: 0 8px; }
+            .logo { font-size: 15px; }
+
+            /* Single column abilities on very small screens */
+            .abilities-list { grid-template-columns: 1fr; }
+
+            /* Stat rows: 3 cols still works at this size */
+            .field-row.cols-5, .field-row.cols-6 { grid-template-columns: repeat(3, 1fr); }
+
+            .field input, .field select { padding: 8px 4px; font-size: 13px; }
+            .field label { font-size: 10px; }
+
+            .panel-body { padding: 10px; }
+            .panel-head { padding: 8px 10px; }
+
+            .prob-bar-pct { font-size: 8px; }
+            .prob-bar-label { font-size: 9px; }
+        }
     </style>
 </head>
 <body>
