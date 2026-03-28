@@ -716,6 +716,19 @@
             white-space: nowrap;
         }
         .btn-preset-save:hover { border-color: var(--accent); color: var(--accent); }
+        .btn-preset-load {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+        .btn-preset-load:hover { border-color: var(--green); color: var(--green); }
         .btn-preset-del {
             background: none;
             border: 1px solid var(--border);
@@ -1114,7 +1127,8 @@
             <div class="panel-head attack">
                 <h2>Attacker</h2>
                 <div class="panel-head-actions">
-                    <select class="preset-select" id="atk-preset-select"><option value="">-- Presets --</option></select>
+                    <select class="preset-select" id="atk-preset-select"><option value="" disabled selected>-- Presets --</option></select>
+                    <button class="btn-preset-load" id="btn-load-atk-preset" title="Load selected preset" style="display:none">Load</button>
                     <button class="btn-preset-save" id="btn-save-atk-preset" title="Save current attacker as preset">Save</button>
                     <button class="btn-preset-del" id="btn-del-atk-preset" title="Delete selected preset" style="display:none">Del</button>
                     <button class="btn-clear" id="btn-clear-all">Clear</button>
@@ -1164,7 +1178,8 @@
             <div class="panel-head defend">
                 <h2>Defender</h2>
                 <div class="panel-head-actions">
-                    <select class="preset-select" id="def-preset-select"><option value="">-- Presets --</option></select>
+                    <select class="preset-select" id="def-preset-select"><option value="" disabled selected>-- Presets --</option></select>
+                    <button class="btn-preset-load" id="btn-load-def-preset" title="Load selected preset" style="display:none">Load</button>
                     <button class="btn-preset-save" id="btn-save-def-preset" title="Save current defender as preset">Save</button>
                     <button class="btn-preset-del" id="btn-del-def-preset" title="Delete selected preset" style="display:none">Del</button>
                     <button class="btn-clear" id="btn-clear-defender">Clear</button>
