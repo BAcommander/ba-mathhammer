@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - BA Mathhammer</title>
+    <meta name="description" content="About BA Mathhammer - a free damage calculator tool by BA Commander.">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+        :root {
+            --bg-primary: #0c0c0f;
+            --bg-secondary: #141419;
+            --bg-tertiary: #1c1c24;
+            --border: #2a2a38;
+            --text-primary: #e8e6e3;
+            --text-secondary: #9e9ba3;
+            --text-muted: #636173;
+            --accent: #c9a84c;
+            --accent-hover: #dab94f;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+        }
+
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header .logo {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+        .header .logo span { color: var(--accent); }
+        .header .back-link {
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            transition: color 0.15s;
+        }
+        .header .back-link:hover { color: var(--accent-hover); }
+
+        .wrap {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 48px 24px;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--accent);
+            margin-bottom: 24px;
+        }
+
+        .section {
+            margin-bottom: 36px;
+        }
+        .section h2 {
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--accent);
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+        .section p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+        .section a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .section a:hover { text-decoration: underline; }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 8px;
+        }
+        .feature-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px 16px;
+        }
+        .feature-item strong {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        .feature-item span {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .links-list {
+            list-style: none;
+            margin-top: 8px;
+        }
+        .links-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .links-list li:last-child { border-bottom: none; }
+        .links-list a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .links-list a:hover { text-decoration: underline; }
+        .links-list .link-desc {
+            display: block;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .disclaimer {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 18px 20px;
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.8;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 32px 24px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        .footer a { color: var(--accent); text-decoration: none; }
+        .footer a:hover { text-decoration: underline; }
+
+        @media (max-width: 600px) {
+            .wrap { padding: 32px 16px; }
+            h1 { font-size: 22px; }
+            .features-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <a href="index.html" class="logo"><span>BA</span> Mathhammer</a>
+    <a href="index.html" class="back-link">&larr; Back to Calculator</a>
+</div>
+
+<div class="wrap">
+    <h1>About BA Mathhammer</h1>
+
+    <div class="section">
+        <p>BA Mathhammer is a free damage calculator that helps you determine the expected outcomes of combat in tabletop wargaming in the Far Far Future.</p>
+    </div>
+
+    <div class="section">
+        <h2>Features</h2>
+        <div class="features-grid">
+            <div class="feature-item">
+                <strong>Damage Calculator</strong>
+                <span>Full hit, wound, save, and damage pipeline with detailed phase breakdowns</span>
+            </div>
+            <div class="feature-item">
+                <strong>Probability Engine</strong>
+                <span>Monte Carlo simulation across 1,000 battles for kill probability distributions</span>
+            </div>
+            <div class="feature-item">
+                <strong>Multiple Weapon Profiles</strong>
+                <span>Model mixed units with different weapons calculated together</span>
+            </div>
+            <div class="feature-item">
+                <strong>Battlegroup Abilities</strong>
+                <span>Apply offensive and defensive abilities across all profiles at once</span>
+            </div>
+            <div class="feature-item">
+                <strong>Preset System</strong>
+                <span>Save and load attacker and defender profiles for quick matchup testing</span>
+            </div>
+            <div class="feature-item">
+                <strong>Attached Characters</strong>
+                <span>Model character wound allocation with separate defensive profiles</span>
+            </div>
+            <div class="feature-item">
+                <strong>Clipboard Export</strong>
+                <span>Copy results as images for sharing in chats, slides, and social media</span>
+            </div>
+            <div class="feature-item">
+                <strong>Calculation Log</strong>
+                <span>History of calculations with save and restore for easy comparison</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Useful Links</h2>
+        <ul class="links-list">
+            <li>
+                <a href="https://www.youtube.com/@ba_commander" target="_blank" rel="noopener">BA Commander YouTube</a>
+                <span class="link-desc">Battle reports, tactics, and army showcases</span>
+            </li>
+            <li>
+                <a href="https://discord.gg/uUHaGtNAZQ" target="_blank" rel="noopener">BAC Discord</a>
+                <span class="link-desc">Community discussion, bug reports, and feature requests</span>
+            </li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Disclaimer</h2>
+        <div class="disclaimer">
+            <p>BA Mathhammer is a free, independent fan-made tool. It is not affiliated with, sponsored by, or endorsed by any specific game system or publisher.</p>
+        </div>
+    </div>
+</div>
+
+<div class="footer">
+    <p>BA Mathhammer - a free tool by <a href="https://www.youtube.com/@ba_commander" target="_blank" rel="noopener">BA Commander</a></p>
+</div>
+
+</body>
+</html>
