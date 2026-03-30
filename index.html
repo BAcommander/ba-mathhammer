@@ -1271,6 +1271,7 @@
                             <div class="ab-item"><input type="checkbox" id="bg-plus-wound"><label for="bg-plus-wound">+1 to Wound</label><span class="ab-tip">?<span class="tip-text"><strong>+1 to Wound Rolls</strong>Add 1 to wound rolls.</span></span></div>
                             <div class="ab-item"><input type="checkbox" id="bg-ignores-cover"><label for="bg-ignores-cover">Ignores Cover</label><span class="ab-tip">?<span class="tip-text"><strong>Ignores Cover</strong>Target cannot benefit from cover.</span></span></div>
                             <div class="ab-item"><input type="checkbox" id="bg-plus-strength"><label for="bg-plus-strength">+X Strength</label><input class="ab-val" type="number" id="bg-plus-strength-value" value="1" min="1" max="6"><span class="ab-tip">?<span class="tip-text"><strong>+X Strength</strong>Add X to the Strength characteristic of all weapons.</span></span></div>
+                            <div class="ab-item"><input type="checkbox" id="bg-plus-attacks"><label for="bg-plus-attacks">+X Attacks</label><input class="ab-val" type="number" id="bg-plus-attacks-value" value="1" min="1" max="6"><span class="ab-tip">?<span class="tip-text"><strong>+X Attacks</strong>Add X to the Attacks characteristic of all weapons per model.</span></span></div>
                         </div>
                     </div>
                 </div>
@@ -1312,6 +1313,7 @@
                             <div class="ab-item"><input type="checkbox" id="bg-reroll-1s-invuln"><label for="bg-reroll-1s-invuln">Re-roll 1s Invuln</label><span class="ab-tip">?<span class="tip-text"><strong>Re-roll Invulnerable 1s</strong>Re-roll invulnerable save rolls of 1.</span></span></div>
                             <div class="ab-item"><input type="checkbox" id="bg-minus-wound"><label for="bg-minus-wound">-1 to Wound</label><span class="ab-tip">?<span class="tip-text"><strong>-1 to Wound Rolls</strong>Subtract 1 from wound rolls made against this unit.</span></span></div>
                             <div class="ab-item"><input type="checkbox" id="bg-minus-toughness"><label for="bg-minus-toughness">-1 Toughness</label><span class="ab-tip">?<span class="tip-text"><strong>-1 Toughness</strong>Reduce the defender's Toughness by 1 (minimum 1).</span></span></div>
+                            <div class="ab-item"><input type="checkbox" id="bg-fnp"><label for="bg-fnp">FNP</label><input class="ab-val" type="number" id="bg-fnp-value" value="6" min="2" max="6"><span class="ab-tip">?<span class="tip-text"><strong>Feel No Pain (X+)</strong>Grant FNP to the entire battlegroup via stratagem. Uses the best (lowest) value if the unit already has native FNP.</span></span></div>
                         </div>
                     </div>
                 </div>
@@ -1592,7 +1594,7 @@
 })();
 </script>
 
-<script src="app.js?v=031"></script>
+<script src="app.js?v=032"></script>
 <script>
 // Slide menu
 document.getElementById('menu-open').addEventListener('click', function() {
