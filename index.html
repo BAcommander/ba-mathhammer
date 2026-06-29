@@ -117,11 +117,18 @@
             padding: 24px;
         }
 
+        .title-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 4px;
+        }
         .page-title {
             font-size: 26px;
             font-weight: 800;
             letter-spacing: -0.5px;
-            margin-bottom: 4px;
+            margin: 0;
         }
         .page-subtitle {
             color: var(--text-muted);
@@ -129,17 +136,20 @@
             margin-bottom: 24px;
         }
         .edition-badge {
-            display: inline-block;
-            margin-left: 10px;
-            padding: 2px 8px;
-            font-size: 11px;
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 11px;
+            font-size: 10.5px;
             font-weight: 700;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.8px;
             text-transform: uppercase;
             color: var(--accent);
+            background: var(--accent-dim);
             border: 1px solid var(--accent);
             border-radius: 999px;
-            vertical-align: middle;
+            white-space: nowrap;
+            position: relative;
+            top: 1px;
         }
 
         /* --- Grid --- */
@@ -1225,7 +1235,10 @@
 </div>
 
 <div class="wrap">
-    <h1 class="page-title">Damage Calculator v0.4 - <span class="edition-badge">11th Edition</span></h1>
+    <div class="title-row">
+        <h1 class="page-title">Damage Calculator v0.4</h1>
+        <span class="edition-badge">11th Edition</span>
+    </div>
     <p class="page-subtitle">Space Combat in a Future Far Far Away</p>
 
     <div class="log-bar">
