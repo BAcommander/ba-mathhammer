@@ -128,6 +128,19 @@
             font-size: 14px;
             margin-bottom: 24px;
         }
+        .edition-badge {
+            display: inline-block;
+            margin-left: 10px;
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            border-radius: 999px;
+            vertical-align: middle;
+        }
 
         /* --- Grid --- */
         .calc-grid {
@@ -1212,7 +1225,7 @@
 </div>
 
 <div class="wrap">
-    <h1 class="page-title">Damage Calculator v0.35</h1>
+    <h1 class="page-title">Damage Calculator v0.4 - <span class="edition-badge">11th Edition</span></h1>
     <p class="page-subtitle">Space Combat in a Future Far Far Away</p>
 
     <div class="log-bar">
@@ -1272,6 +1285,7 @@
                             <div class="ab-item"><input type="checkbox" id="bg-ignores-cover"><label for="bg-ignores-cover">Ignores Cover</label><span class="ab-tip">?<span class="tip-text"><strong>Ignores Cover</strong>Target cannot benefit from cover.</span></span></div>
                             <div class="ab-item"><input type="checkbox" id="bg-plus-strength"><label for="bg-plus-strength">+X Strength</label><input class="ab-val" type="number" id="bg-plus-strength-value" value="1" min="1" max="6"><span class="ab-tip">?<span class="tip-text"><strong>+X Strength</strong>Add X to the Strength characteristic of all weapons.</span></span></div>
                             <div class="ab-item"><input type="checkbox" id="bg-plus-attacks"><label for="bg-plus-attacks">+X Attacks</label><input class="ab-val" type="number" id="bg-plus-attacks-value" value="1" min="1" max="6"><span class="ab-tip">?<span class="tip-text"><strong>+X Attacks</strong>Add X to the Attacks characteristic of all weapons per model.</span></span></div>
+                            <div class="ab-item"><input type="checkbox" id="bg-plus-ap"><label for="bg-plus-ap">+X AP</label><input class="ab-val" type="number" id="bg-plus-ap-value" value="1" min="1" max="6"><span class="ab-tip">?<span class="tip-text"><strong>+X AP</strong>Improve the Armour Penetration of all weapons by X (e.g. AP-1 becomes AP-2).</span></span></div>
                         </div>
                     </div>
                 </div>
@@ -1305,9 +1319,10 @@
                     <div class="abilities-block">
                         <div class="abilities-label">Battlegroup Defensive Modifiers</div>
                         <div class="abilities-list">
-                            <div class="ab-item"><input type="checkbox" id="bg-cover"><label for="bg-cover">Cover (+1 Sv)</label><span class="ab-tip">?<span class="tip-text"><strong>Benefit of Cover</strong>+1 to armour saves vs ranged attacks.</span></span></div>
-                            <div class="ab-item"><input type="checkbox" id="bg-stealth"><label for="bg-stealth">Stealth (-1 Hit)</label><span class="ab-tip">?<span class="tip-text"><strong>Stealth</strong>-1 penalty to hit rolls from ranged attacks.</span></span></div>
+                            <div class="ab-item"><input type="checkbox" id="bg-cover"><label for="bg-cover">Cover (-1 BS)</label><span class="ab-tip">?<span class="tip-text"><strong>Benefit of Cover</strong>Worsens the attacker's BS/WS characteristic by 1 for ranged attacks. Negated by Ignores Cover. Stacks with -1 to Hit.</span></span></div>
+                            <div class="ab-item"><input type="checkbox" id="bg-stealth"><label for="bg-stealth">-1 to Hit</label><span class="ab-tip">?<span class="tip-text"><strong>-1 to Hit</strong>A penalty to the hit roll itself. Stacks with Cover's -1 BS (both on = -2 to hit). Not removed by Ignores Cover.</span></span></div>
                             <div class="ab-item"><input type="checkbox" id="bg-minus-ap"><label for="bg-minus-ap">-1 AP</label><span class="ab-tip">?<span class="tip-text"><strong>-1 AP Modifier</strong>Reduces incoming AP by 1.</span></span></div>
+                            <div class="ab-item"><input type="checkbox" id="bg-plus-save"><label for="bg-plus-save">+1 Sv</label><span class="ab-tip">?<span class="tip-text"><strong>+1 Save</strong>Improve this unit's armour save by 1 (e.g. 4+ becomes 3+). Does not affect invulnerable saves.</span></span></div>
                             <div class="ab-item"><input type="checkbox" id="bg-minus-damage"><label for="bg-minus-damage">-1 Damage</label><span class="ab-tip">?<span class="tip-text"><strong>-1 Damage</strong>Reduces incoming Damage by 1 (minimum 1).</span></span></div>
                             <div class="ab-item"><input type="checkbox" id="bg-half-damage"><label for="bg-half-damage">Half Damage</label><span class="ab-tip">?<span class="tip-text"><strong>Half Damage</strong>Halves incoming Damage, rounded up (minimum 1).</span></span></div>
                             <div class="ab-item"><input type="checkbox" id="bg-reroll-1s-invuln"><label for="bg-reroll-1s-invuln">Re-roll 1s Invuln</label><span class="ab-tip">?<span class="tip-text"><strong>Re-roll Invulnerable 1s</strong>Re-roll invulnerable save rolls of 1.</span></span></div>
@@ -1365,18 +1380,23 @@
                     <div class="abilities-list collapsed" id="def-mods-list">
                         <div class="ab-item">
                             <input type="checkbox" id="cover">
-                            <label for="cover">Cover (+1 Sv)</label>
-                            <span class="ab-tip">?<span class="tip-text"><strong>Benefit of Cover</strong>+1 to armour saves vs ranged attacks. Does not apply to 3+ saves vs AP 0.</span></span>
+                            <label for="cover">Cover (-1 BS)</label>
+                            <span class="ab-tip">?<span class="tip-text"><strong>Benefit of Cover</strong>Worsens the attacker's BS/WS characteristic by 1 for ranged attacks. Negated by Ignores Cover. Stacks with -1 to Hit.</span></span>
                         </div>
                         <div class="ab-item">
                             <input type="checkbox" id="stealth">
-                            <label for="stealth">Stealth (-1 Hit)</label>
-                            <span class="ab-tip">?<span class="tip-text"><strong>Stealth</strong>-1 penalty to hit rolls from ranged attacks targeting this unit.</span></span>
+                            <label for="stealth">-1 to Hit</label>
+                            <span class="ab-tip">?<span class="tip-text"><strong>-1 to Hit</strong>A penalty to the hit roll itself. Stacks with Cover's -1 BS (both on = -2 to hit). Not removed by Ignores Cover.</span></span>
                         </div>
                         <div class="ab-item">
                             <input type="checkbox" id="minus-ap">
                             <label for="minus-ap">-1 AP</label>
                             <span class="ab-tip">?<span class="tip-text"><strong>-1 AP Modifier</strong>Reduces incoming AP by 1.</span></span>
+                        </div>
+                        <div class="ab-item">
+                            <input type="checkbox" id="plus-save">
+                            <label for="plus-save">+1 Sv</label>
+                            <span class="ab-tip">?<span class="tip-text"><strong>+1 Save</strong>Improve this unit's armour save by 1 (e.g. 4+ becomes 3+). Does not affect invulnerable saves.</span></span>
                         </div>
                         <div class="ab-item">
                             <input type="checkbox" id="minus-damage">
@@ -1451,18 +1471,23 @@
                         <div class="abilities-list collapsed" id="char-mods-list">
                             <div class="ab-item">
                                 <input type="checkbox" id="char-cover">
-                                <label for="char-cover">Cover (+1 Sv)</label>
-                                <span class="ab-tip">?<span class="tip-text"><strong>Benefit of Cover</strong>+1 to armour saves vs ranged attacks. Does not apply to 3+ saves vs AP 0.</span></span>
+                                <label for="char-cover">Cover (-1 BS)</label>
+                                <span class="ab-tip">?<span class="tip-text"><strong>Benefit of Cover</strong>Worsens the attacker's BS/WS characteristic by 1 for ranged attacks. Negated by Ignores Cover. Stacks with -1 to Hit.</span></span>
                             </div>
                             <div class="ab-item">
                                 <input type="checkbox" id="char-stealth">
-                                <label for="char-stealth">Stealth (-1 Hit)</label>
-                                <span class="ab-tip">?<span class="tip-text"><strong>Stealth</strong>-1 penalty to hit rolls from ranged attacks targeting this unit.</span></span>
+                                <label for="char-stealth">-1 to Hit</label>
+                                <span class="ab-tip">?<span class="tip-text"><strong>-1 to Hit</strong>A penalty to the hit roll itself. Stacks with Cover's -1 BS (both on = -2 to hit). Not removed by Ignores Cover.</span></span>
                             </div>
                             <div class="ab-item">
                                 <input type="checkbox" id="char-minus-ap">
                                 <label for="char-minus-ap">-1 AP</label>
                                 <span class="ab-tip">?<span class="tip-text"><strong>-1 AP Modifier</strong>Reduces incoming AP by 1.</span></span>
+                            </div>
+                            <div class="ab-item">
+                                <input type="checkbox" id="char-plus-save">
+                                <label for="char-plus-save">+1 Sv</label>
+                                <span class="ab-tip">?<span class="tip-text"><strong>+1 Save</strong>Improve this character's armour save by 1 (e.g. 4+ becomes 3+). Does not affect invulnerable saves.</span></span>
                             </div>
                             <div class="ab-item">
                                 <input type="checkbox" id="char-minus-damage">
@@ -1605,7 +1630,7 @@
 })();
 </script>
 
-<script src="app.js?v=035"></script>
+<script src="app.js?v=041"></script>
 <script>
 // Slide menu
 document.getElementById('menu-open').addEventListener('click', function() {
