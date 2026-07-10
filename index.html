@@ -215,16 +215,14 @@
             box-sizing: border-box;
             text-align: center;
         }
-        .field input[type="text"] {
+        .unit-name .field input[type="text"] {
             text-align: left;
             padding: 10px 12px;
+            font-family: 'Inter', sans-serif;
         }
         .field input:focus, .field select:focus {
             outline: none;
             border-color: var(--border-focus);
-        }
-        .field input[type="text"] {
-            font-family: 'Inter', sans-serif;
         }
         .field input::placeholder { color: var(--text-muted); font-size: 12px; }
 
@@ -263,6 +261,19 @@
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 6px;
+        }
+        .abilities-list.grouped { align-items: start; gap: 10px; }
+        .abilities-list.grouped .ab-item label { white-space: normal; }
+        .ab-col { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+        .ab-col-head {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: var(--text-muted);
+            padding: 0 8px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 4px;
         }
         .ab-item {
             display: flex;
@@ -1194,8 +1205,9 @@
             .field-row.cols-5 { grid-template-columns: repeat(3, 1fr); }
             .field-row.cols-6 { grid-template-columns: repeat(3, 1fr); }
 
-            /* Abilities: 2 columns */
+            /* Abilities: 2 columns; grouped weapon abilities stack their columns */
             .abilities-list { grid-template-columns: repeat(2, 1fr); }
+            .abilities-list.grouped { grid-template-columns: 1fr; }
 
             /* Panel head wraps on mobile */
             .panel-head { padding: 10px 14px; flex-wrap: wrap; gap: 8px; }
@@ -1289,7 +1301,7 @@
 
 <div class="wrap">
     <div class="title-row">
-        <h1 class="page-title">Damage Calculator v0.43</h1>
+        <h1 class="page-title">Damage Calculator v0.5</h1>
         <span class="edition-badge">11th Edition</span>
     </div>
     <p class="page-subtitle">Space Combat in a Future Far Far Away</p>
@@ -1318,7 +1330,7 @@
             <div class="panel-head attack">
                 <h2>Attacker</h2>
                 <div class="panel-head-actions">
-                    <button class="btn-clear" id="btn-clear-all">Clear</button>
+                    <button class="btn-clear" id="btn-clear-attacker">Clear</button>
                 </div>
             </div>
             <div class="panel-body">
@@ -1337,20 +1349,29 @@
                 <div class="battlegroup-fields" id="atk-bg-fields">
                     <div class="abilities-block">
                         <div class="abilities-label">Battlegroup Offensive Abilities</div>
-                        <div class="abilities-list">
-                            <div class="ab-item"><input type="checkbox" id="bg-lethal-hits"><label for="bg-lethal-hits">Lethal Hits</label><span class="ab-tip">?<span class="tip-text"><strong>Lethal Hits</strong>Critical hits automatically wound the target.</span></span></div>
-                            <div class="ab-item"><input type="checkbox" id="bg-sustained-hits"><label for="bg-sustained-hits">Sustained Hits</label><input class="ab-val" type="text" id="bg-sustained-value" value="1" placeholder="1, D3"><span class="ab-tip">?<span class="tip-text"><strong>Sustained Hits (X)</strong>Critical hits generate extra hits. Supports D3, D6, etc.</span></span></div>
-                            <div class="ab-item"><input type="checkbox" id="bg-devastating-wounds"><label for="bg-devastating-wounds">Devastating Wounds</label><span class="ab-tip">?<span class="tip-text"><strong>Devastating Wounds</strong>Critical wounds bypass saving throws (incl. invulnerable). Pseudo-mortal-wounds: damage reduction still applies and they don't spill between models.</span></span></div>
-                            <div class="ab-item"><input type="checkbox" id="bg-reroll-hits"><label for="bg-reroll-hits">Re-roll Hits</label><span class="ab-tip">?<span class="tip-text"><strong>Re-roll Hit Rolls</strong>Re-roll failed hit rolls.</span></span></div>
-                            <div class="ab-item"><input type="checkbox" id="bg-reroll-1s-hit"><label for="bg-reroll-1s-hit">Re-roll 1s Hit</label><span class="ab-tip">?<span class="tip-text"><strong>Re-roll Hit Rolls of 1</strong>Re-roll unmodified hit rolls of 1.</span></span></div>
-                            <div class="ab-item"><input type="checkbox" id="bg-reroll-wounds"><label for="bg-reroll-wounds">Re-roll Wounds</label><span class="ab-tip">?<span class="tip-text"><strong>Re-roll Wound Rolls</strong>Re-roll failed wound rolls.</span></span></div>
-                            <div class="ab-item"><input type="checkbox" id="bg-reroll-1s-wound"><label for="bg-reroll-1s-wound">Re-roll 1s Wound</label><span class="ab-tip">?<span class="tip-text"><strong>Re-roll Wound Rolls of 1</strong>Re-roll unmodified wound rolls of 1.</span></span></div>
-                            <div class="ab-item"><input type="checkbox" id="bg-plus-hit"><label for="bg-plus-hit">+1 to Hit</label><span class="ab-tip">?<span class="tip-text"><strong>+1 to Hit Rolls</strong>Add 1 to hit rolls.</span></span></div>
-                            <div class="ab-item"><input type="checkbox" id="bg-plus-wound"><label for="bg-plus-wound">+1 to Wound</label><span class="ab-tip">?<span class="tip-text"><strong>+1 to Wound Rolls</strong>Add 1 to wound rolls.</span></span></div>
-                            <div class="ab-item"><input type="checkbox" id="bg-ignores-cover"><label for="bg-ignores-cover">Ignores Cover</label><span class="ab-tip">?<span class="tip-text"><strong>Ignores Cover</strong>Target cannot benefit from cover.</span></span></div>
-                            <div class="ab-item"><input type="checkbox" id="bg-plus-strength"><label for="bg-plus-strength">+X Strength</label><input class="ab-val" type="number" id="bg-plus-strength-value" value="1" min="1" max="6"><span class="ab-tip">?<span class="tip-text"><strong>+X Strength</strong>Add X to the Strength characteristic of all weapons.</span></span></div>
-                            <div class="ab-item"><input type="checkbox" id="bg-plus-attacks"><label for="bg-plus-attacks">+X Attacks</label><input class="ab-val" type="number" id="bg-plus-attacks-value" value="1" min="1" max="6"><span class="ab-tip">?<span class="tip-text"><strong>+X Attacks</strong>Add X to the Attacks characteristic of all weapons per model.</span></span></div>
-                            <div class="ab-item"><input type="checkbox" id="bg-plus-ap"><label for="bg-plus-ap">+X AP</label><input class="ab-val" type="number" id="bg-plus-ap-value" value="1" min="1" max="6"><span class="ab-tip">?<span class="tip-text"><strong>+X AP</strong>Improve the Armour Penetration of all weapons by X (e.g. AP-1 becomes AP-2).</span></span></div>
+                        <div class="abilities-list grouped">
+                            <div class="ab-col">
+                                <div class="ab-col-head">Hit Roll</div>
+                                <div class="ab-item"><input type="checkbox" id="bg-sustained-hits"><label for="bg-sustained-hits">Sustained Hits</label><input class="ab-val" type="text" id="bg-sustained-value" value="1" placeholder="1, D3"><span class="ab-tip">?<span class="tip-text"><strong>Sustained Hits (X)</strong>Critical hits generate extra hits. Supports D3, D6, etc.</span></span></div>
+                                <div class="ab-item"><input type="checkbox" id="bg-lethal-hits"><label for="bg-lethal-hits">Lethal Hits</label><span class="ab-tip">?<span class="tip-text"><strong>Lethal Hits</strong>Critical hits automatically wound the target.</span></span></div>
+                                <div class="ab-item"><input type="checkbox" id="bg-plus-hit"><label for="bg-plus-hit">+1 to Hit</label><span class="ab-tip">?<span class="tip-text"><strong>+1 to Hit Rolls</strong>Add 1 to hit rolls.</span></span></div>
+                                <div class="ab-item"><input type="checkbox" id="bg-reroll-hits"><label for="bg-reroll-hits">Re-roll Hits</label><span class="ab-tip">?<span class="tip-text"><strong>Re-roll Hit Rolls</strong>Re-roll failed hit rolls.</span></span></div>
+                                <div class="ab-item"><input type="checkbox" id="bg-reroll-1s-hit"><label for="bg-reroll-1s-hit">Re-roll 1s Hit</label><span class="ab-tip">?<span class="tip-text"><strong>Re-roll Hit Rolls of 1</strong>Re-roll unmodified hit rolls of 1.</span></span></div>
+                                <div class="ab-item"><input type="checkbox" id="bg-ignores-cover"><label for="bg-ignores-cover">Ignores Cover</label><span class="ab-tip">?<span class="tip-text"><strong>Ignores Cover</strong>Target cannot benefit from cover.</span></span></div>
+                            </div>
+                            <div class="ab-col">
+                                <div class="ab-col-head">Wound Roll</div>
+                                <div class="ab-item"><input type="checkbox" id="bg-devastating-wounds"><label for="bg-devastating-wounds">Devastating Wounds</label><span class="ab-tip">?<span class="tip-text"><strong>Devastating Wounds</strong>Critical wounds bypass saving throws (incl. invulnerable). Pseudo-mortal-wounds: damage reduction still applies and they don't spill between models.</span></span></div>
+                                <div class="ab-item"><input type="checkbox" id="bg-plus-strength"><label for="bg-plus-strength">+X Strength</label><input class="ab-val" type="number" id="bg-plus-strength-value" value="1" min="1" max="6"><span class="ab-tip">?<span class="tip-text"><strong>+X Strength</strong>Add X to the Strength characteristic of all weapons.</span></span></div>
+                                <div class="ab-item"><input type="checkbox" id="bg-plus-wound"><label for="bg-plus-wound">+1 to Wound</label><span class="ab-tip">?<span class="tip-text"><strong>+1 to Wound Rolls</strong>Add 1 to wound rolls.</span></span></div>
+                                <div class="ab-item"><input type="checkbox" id="bg-reroll-wounds"><label for="bg-reroll-wounds">Re-roll Wounds / Twin-linked</label><span class="ab-tip">?<span class="tip-text"><strong>Re-roll Wound Rolls (Twin-linked)</strong>Re-roll failed wound rolls. This is what the Twin-linked weapon ability does.</span></span></div>
+                                <div class="ab-item"><input type="checkbox" id="bg-reroll-1s-wound"><label for="bg-reroll-1s-wound">Re-roll 1s Wound</label><span class="ab-tip">?<span class="tip-text"><strong>Re-roll Wound Rolls of 1</strong>Re-roll unmodified wound rolls of 1.</span></span></div>
+                            </div>
+                            <div class="ab-col">
+                                <div class="ab-col-head">Misc</div>
+                                <div class="ab-item"><input type="checkbox" id="bg-plus-attacks"><label for="bg-plus-attacks">+X Attacks</label><input class="ab-val" type="number" id="bg-plus-attacks-value" value="1" min="1" max="6"><span class="ab-tip">?<span class="tip-text"><strong>+X Attacks</strong>Add X to the Attacks characteristic of all weapons per model.</span></span></div>
+                                <div class="ab-item"><input type="checkbox" id="bg-plus-ap"><label for="bg-plus-ap">+X AP</label><input class="ab-val" type="number" id="bg-plus-ap-value" value="1" min="1" max="6"><span class="ab-tip">?<span class="tip-text"><strong>+X AP</strong>Improve the Armour Penetration of all weapons by X (e.g. AP-1 becomes AP-2).</span></span></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1393,16 +1414,25 @@
                 <div class="battlegroup-fields" id="def-bg-fields">
                     <div class="abilities-block">
                         <div class="abilities-label">Battlegroup Defensive Modifiers</div>
-                        <div class="abilities-list">
-                            <div class="ab-item"><input type="checkbox" id="bg-cover"><label for="bg-cover">Cover (-1 BS)</label><span class="ab-tip">?<span class="tip-text"><strong>Benefit of Cover</strong>Worsens the attacker's BS/WS characteristic by 1 for ranged attacks. Negated by Ignores Cover. Stacks with -1 to Hit.</span></span></div>
-                            <div class="ab-item"><input type="checkbox" id="bg-stealth"><label for="bg-stealth">-1 to Hit</label><span class="ab-tip">?<span class="tip-text"><strong>-1 to Hit</strong>A penalty to the hit roll itself. Stacks with Cover's -1 BS (both on = -2 to hit). Not removed by Ignores Cover.</span></span></div>
-                            <div class="ab-item"><input type="checkbox" id="bg-minus-ap"><label for="bg-minus-ap">-1 AP</label><span class="ab-tip">?<span class="tip-text"><strong>-1 AP Modifier</strong>Reduces incoming AP by 1.</span></span></div>
-                            <div class="ab-item"><input type="checkbox" id="bg-plus-save"><label for="bg-plus-save">+1 Sv</label><span class="ab-tip">?<span class="tip-text"><strong>+1 Save</strong>Improve this unit's armour save by 1 (e.g. 4+ becomes 3+). Does not affect invulnerable saves.</span></span></div>
-                            <div class="ab-item"><input type="checkbox" id="bg-minus-damage"><label for="bg-minus-damage">-1 Damage</label><span class="ab-tip">?<span class="tip-text"><strong>-1 Damage</strong>Reduces incoming Damage by 1 (minimum 1).</span></span></div>
-                            <div class="ab-item"><input type="checkbox" id="bg-half-damage"><label for="bg-half-damage">Half Damage</label><span class="ab-tip">?<span class="tip-text"><strong>Half Damage</strong>Halves incoming Damage, rounded up (minimum 1).</span></span></div>
-                            <div class="ab-item"><input type="checkbox" id="bg-reroll-1s-invuln"><label for="bg-reroll-1s-invuln">Re-roll 1s Invuln</label><span class="ab-tip">?<span class="tip-text"><strong>Re-roll Invulnerable 1s</strong>Re-roll invulnerable save rolls of 1.</span></span></div>
-                            <div class="ab-item"><input type="checkbox" id="bg-minus-wound"><label for="bg-minus-wound">-1 to Wound</label><span class="ab-tip">?<span class="tip-text"><strong>-1 to Wound Rolls</strong>Subtract 1 from wound rolls made against this unit.</span></span></div>
-                            <div class="ab-item"><input type="checkbox" id="bg-minus-toughness"><label for="bg-minus-toughness">-1 Toughness</label><span class="ab-tip">?<span class="tip-text"><strong>-1 Toughness</strong>Reduce the defender's Toughness by 1 (minimum 1).</span></span></div>
+                        <div class="abilities-list grouped">
+                            <div class="ab-col">
+                                <div class="ab-col-head">Hit &amp; Wound</div>
+                                <div class="ab-item"><input type="checkbox" id="bg-cover"><label for="bg-cover">Cover (-1 BS)</label><span class="ab-tip">?<span class="tip-text"><strong>Benefit of Cover</strong>Worsens the attacker's BS/WS characteristic by 1 for ranged attacks. Negated by Ignores Cover. Stacks with -1 to Hit.</span></span></div>
+                                <div class="ab-item"><input type="checkbox" id="bg-stealth"><label for="bg-stealth">-1 to Hit</label><span class="ab-tip">?<span class="tip-text"><strong>-1 to Hit</strong>A penalty to the hit roll itself. Stacks with Cover's -1 BS (both on = -2 to hit). Not removed by Ignores Cover.</span></span></div>
+                                <div class="ab-item"><input type="checkbox" id="bg-minus-wound"><label for="bg-minus-wound">-1 to Wound</label><span class="ab-tip">?<span class="tip-text"><strong>-1 to Wound Rolls</strong>Subtract 1 from wound rolls made against this unit.</span></span></div>
+                                <div class="ab-item"><input type="checkbox" id="bg-minus-toughness"><label for="bg-minus-toughness">-1 Toughness</label><span class="ab-tip">?<span class="tip-text"><strong>-1 Toughness</strong>Reduce the defender's Toughness by 1 (minimum 1).</span></span></div>
+                            </div>
+                            <div class="ab-col">
+                                <div class="ab-col-head">Saves</div>
+                                <div class="ab-item"><input type="checkbox" id="bg-plus-save"><label for="bg-plus-save">+1 Sv</label><span class="ab-tip">?<span class="tip-text"><strong>+1 Save</strong>Improve this unit's armour save by 1 (e.g. 4+ becomes 3+). Does not affect invulnerable saves.</span></span></div>
+                                <div class="ab-item"><input type="checkbox" id="bg-minus-ap"><label for="bg-minus-ap">-1 AP</label><span class="ab-tip">?<span class="tip-text"><strong>-1 AP Modifier</strong>Reduces incoming AP by 1.</span></span></div>
+                                <div class="ab-item"><input type="checkbox" id="bg-reroll-1s-invuln"><label for="bg-reroll-1s-invuln">Re-roll 1s Invuln</label><span class="ab-tip">?<span class="tip-text"><strong>Re-roll Invulnerable 1s</strong>Re-roll invulnerable save rolls of 1.</span></span></div>
+                            </div>
+                            <div class="ab-col">
+                                <div class="ab-col-head">Damage</div>
+                                <div class="ab-item"><input type="checkbox" id="bg-half-damage"><label for="bg-half-damage">Half Damage</label><span class="ab-tip">?<span class="tip-text"><strong>Half Damage</strong>Halves incoming Damage, rounded up (minimum 1).</span></span></div>
+                                <div class="ab-item"><input type="checkbox" id="bg-minus-damage"><label for="bg-minus-damage">-1 Damage</label><span class="ab-tip">?<span class="tip-text"><strong>-1 Damage</strong>Reduces incoming Damage by 1 (minimum 1).</span></span></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1463,52 +1493,61 @@
                         <input type="checkbox" id="show-def-mods">
                         <label for="show-def-mods">Defensive Modifiers</label>
                     </div>
-                    <div class="abilities-list collapsed" id="def-mods-list">
-                        <div class="ab-item">
-                            <input type="checkbox" id="cover">
-                            <label for="cover">Cover (-1 BS)</label>
-                            <span class="ab-tip">?<span class="tip-text"><strong>Benefit of Cover</strong>Worsens the attacker's BS/WS characteristic by 1 for ranged attacks. Negated by Ignores Cover. Stacks with -1 to Hit.</span></span>
+                    <div class="abilities-list grouped collapsed" id="def-mods-list">
+                        <div class="ab-col">
+                            <div class="ab-col-head">Hit &amp; Wound</div>
+                            <div class="ab-item">
+                                <input type="checkbox" id="cover">
+                                <label for="cover">Cover (-1 BS)</label>
+                                <span class="ab-tip">?<span class="tip-text"><strong>Benefit of Cover</strong>Worsens the attacker's BS/WS characteristic by 1 for ranged attacks. Negated by Ignores Cover. Stacks with -1 to Hit.</span></span>
+                            </div>
+                            <div class="ab-item">
+                                <input type="checkbox" id="stealth">
+                                <label for="stealth">-1 to Hit</label>
+                                <span class="ab-tip">?<span class="tip-text"><strong>-1 to Hit</strong>A penalty to the hit roll itself. Stacks with Cover's -1 BS (both on = -2 to hit). Not removed by Ignores Cover.</span></span>
+                            </div>
+                            <div class="ab-item">
+                                <input type="checkbox" id="minus-wound">
+                                <label for="minus-wound">-1 to Wound</label>
+                                <span class="ab-tip">?<span class="tip-text"><strong>-1 to Wound Rolls</strong>Subtract 1 from wound rolls made against this unit.</span></span>
+                            </div>
                         </div>
-                        <div class="ab-item">
-                            <input type="checkbox" id="stealth">
-                            <label for="stealth">-1 to Hit</label>
-                            <span class="ab-tip">?<span class="tip-text"><strong>-1 to Hit</strong>A penalty to the hit roll itself. Stacks with Cover's -1 BS (both on = -2 to hit). Not removed by Ignores Cover.</span></span>
+                        <div class="ab-col">
+                            <div class="ab-col-head">Saves</div>
+                            <div class="ab-item">
+                                <input type="checkbox" id="plus-save">
+                                <label for="plus-save">+1 Sv</label>
+                                <span class="ab-tip">?<span class="tip-text"><strong>+1 Save</strong>Improve this unit's armour save by 1 (e.g. 4+ becomes 3+). Does not affect invulnerable saves.</span></span>
+                            </div>
+                            <div class="ab-item">
+                                <input type="checkbox" id="minus-ap">
+                                <label for="minus-ap">-1 AP</label>
+                                <span class="ab-tip">?<span class="tip-text"><strong>-1 AP Modifier</strong>Reduces incoming AP by 1.</span></span>
+                            </div>
+                            <div class="ab-item">
+                                <input type="checkbox" id="reroll-1s-invuln">
+                                <label for="reroll-1s-invuln">Re-roll 1s Invuln</label>
+                                <span class="ab-tip">?<span class="tip-text"><strong>Re-roll Invulnerable 1s</strong>Re-roll invulnerable save rolls of 1.</span></span>
+                            </div>
                         </div>
-                        <div class="ab-item">
-                            <input type="checkbox" id="minus-ap">
-                            <label for="minus-ap">-1 AP</label>
-                            <span class="ab-tip">?<span class="tip-text"><strong>-1 AP Modifier</strong>Reduces incoming AP by 1.</span></span>
-                        </div>
-                        <div class="ab-item">
-                            <input type="checkbox" id="plus-save">
-                            <label for="plus-save">+1 Sv</label>
-                            <span class="ab-tip">?<span class="tip-text"><strong>+1 Save</strong>Improve this unit's armour save by 1 (e.g. 4+ becomes 3+). Does not affect invulnerable saves.</span></span>
-                        </div>
-                        <div class="ab-item">
-                            <input type="checkbox" id="minus-damage">
-                            <label for="minus-damage">-1 Damage</label>
-                            <span class="ab-tip">?<span class="tip-text"><strong>-1 Damage</strong>Reduces incoming Damage by 1 (minimum 1).</span></span>
-                        </div>
-                        <div class="ab-item">
-                            <input type="checkbox" id="half-damage">
-                            <label for="half-damage">Half Damage</label>
-                            <span class="ab-tip">?<span class="tip-text"><strong>Half Damage</strong>Halves incoming Damage, rounded up (minimum 1).</span></span>
-                        </div>
-                        <div class="ab-item">
-                            <input type="checkbox" id="reroll-1s-invuln">
-                            <label for="reroll-1s-invuln">Re-roll 1s Invuln</label>
-                            <span class="ab-tip">?<span class="tip-text"><strong>Re-roll Invulnerable 1s</strong>Re-roll invulnerable save rolls of 1.</span></span>
-                        </div>
-                        <div class="ab-item">
-                            <input type="checkbox" id="minus-wound">
-                            <label for="minus-wound">-1 to Wound</label>
-                            <span class="ab-tip">?<span class="tip-text"><strong>-1 to Wound Rolls</strong>Subtract 1 from wound rolls made against this unit.</span></span>
-                        </div>
-                        <div class="ab-item">
-                            <input type="checkbox" id="def-fnp">
-                            <label for="def-fnp">FNP</label>
-                            <input class="ab-val" type="number" id="def-fnp-value" value="6" min="2" max="6">
-                            <span class="ab-tip">?<span class="tip-text"><strong>Feel No Pain (X+)</strong>Grant FNP via stratagem. Uses the best (lowest) value if unit already has native FNP.</span></span>
+                        <div class="ab-col">
+                            <div class="ab-col-head">Damage</div>
+                            <div class="ab-item">
+                                <input type="checkbox" id="half-damage">
+                                <label for="half-damage">Half Damage</label>
+                                <span class="ab-tip">?<span class="tip-text"><strong>Half Damage</strong>Halves incoming Damage, rounded up (minimum 1).</span></span>
+                            </div>
+                            <div class="ab-item">
+                                <input type="checkbox" id="minus-damage">
+                                <label for="minus-damage">-1 Damage</label>
+                                <span class="ab-tip">?<span class="tip-text"><strong>-1 Damage</strong>Reduces incoming Damage by 1 (minimum 1).</span></span>
+                            </div>
+                            <div class="ab-item">
+                                <input type="checkbox" id="def-fnp">
+                                <label for="def-fnp">FNP</label>
+                                <input class="ab-val" type="number" id="def-fnp-value" value="6" min="2" max="6">
+                                <span class="ab-tip">?<span class="tip-text"><strong>Feel No Pain (X+)</strong>Grant FNP via stratagem. Uses the best (lowest) value if unit already has native FNP.</span></span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1554,52 +1593,61 @@
                             <input type="checkbox" id="show-char-mods">
                             <label for="show-char-mods">Character Defensive Modifiers</label>
                         </div>
-                        <div class="abilities-list collapsed" id="char-mods-list">
-                            <div class="ab-item">
-                                <input type="checkbox" id="char-cover">
-                                <label for="char-cover">Cover (-1 BS)</label>
-                                <span class="ab-tip">?<span class="tip-text"><strong>Benefit of Cover</strong>Worsens the attacker's BS/WS characteristic by 1 for ranged attacks. Negated by Ignores Cover. Stacks with -1 to Hit.</span></span>
+                        <div class="abilities-list grouped collapsed" id="char-mods-list">
+                            <div class="ab-col">
+                                <div class="ab-col-head">Hit &amp; Wound</div>
+                                <div class="ab-item">
+                                    <input type="checkbox" id="char-cover">
+                                    <label for="char-cover">Cover (-1 BS)</label>
+                                    <span class="ab-tip">?<span class="tip-text"><strong>Benefit of Cover</strong>Worsens the attacker's BS/WS characteristic by 1 for ranged attacks. Negated by Ignores Cover. Stacks with -1 to Hit.</span></span>
+                                </div>
+                                <div class="ab-item">
+                                    <input type="checkbox" id="char-stealth">
+                                    <label for="char-stealth">-1 to Hit</label>
+                                    <span class="ab-tip">?<span class="tip-text"><strong>-1 to Hit</strong>A penalty to the hit roll itself. Stacks with Cover's -1 BS (both on = -2 to hit). Not removed by Ignores Cover.</span></span>
+                                </div>
+                                <div class="ab-item">
+                                    <input type="checkbox" id="char-minus-wound">
+                                    <label for="char-minus-wound">-1 to Wound</label>
+                                    <span class="ab-tip">?<span class="tip-text"><strong>-1 to Wound Rolls</strong>Subtract 1 from wound rolls made against this unit.</span></span>
+                                </div>
                             </div>
-                            <div class="ab-item">
-                                <input type="checkbox" id="char-stealth">
-                                <label for="char-stealth">-1 to Hit</label>
-                                <span class="ab-tip">?<span class="tip-text"><strong>-1 to Hit</strong>A penalty to the hit roll itself. Stacks with Cover's -1 BS (both on = -2 to hit). Not removed by Ignores Cover.</span></span>
+                            <div class="ab-col">
+                                <div class="ab-col-head">Saves</div>
+                                <div class="ab-item">
+                                    <input type="checkbox" id="char-plus-save">
+                                    <label for="char-plus-save">+1 Sv</label>
+                                    <span class="ab-tip">?<span class="tip-text"><strong>+1 Save</strong>Improve this character's armour save by 1 (e.g. 4+ becomes 3+). Does not affect invulnerable saves.</span></span>
+                                </div>
+                                <div class="ab-item">
+                                    <input type="checkbox" id="char-minus-ap">
+                                    <label for="char-minus-ap">-1 AP</label>
+                                    <span class="ab-tip">?<span class="tip-text"><strong>-1 AP Modifier</strong>Reduces incoming AP by 1.</span></span>
+                                </div>
+                                <div class="ab-item">
+                                    <input type="checkbox" id="char-reroll-1s-invuln">
+                                    <label for="char-reroll-1s-invuln">Re-roll 1s Invuln</label>
+                                    <span class="ab-tip">?<span class="tip-text"><strong>Re-roll Invulnerable 1s</strong>Re-roll invulnerable save rolls of 1.</span></span>
+                                </div>
                             </div>
-                            <div class="ab-item">
-                                <input type="checkbox" id="char-minus-ap">
-                                <label for="char-minus-ap">-1 AP</label>
-                                <span class="ab-tip">?<span class="tip-text"><strong>-1 AP Modifier</strong>Reduces incoming AP by 1.</span></span>
-                            </div>
-                            <div class="ab-item">
-                                <input type="checkbox" id="char-plus-save">
-                                <label for="char-plus-save">+1 Sv</label>
-                                <span class="ab-tip">?<span class="tip-text"><strong>+1 Save</strong>Improve this character's armour save by 1 (e.g. 4+ becomes 3+). Does not affect invulnerable saves.</span></span>
-                            </div>
-                            <div class="ab-item">
-                                <input type="checkbox" id="char-minus-damage">
-                                <label for="char-minus-damage">-1 Damage</label>
-                                <span class="ab-tip">?<span class="tip-text"><strong>-1 Damage</strong>Reduces incoming Damage by 1 (minimum 1).</span></span>
-                            </div>
-                            <div class="ab-item">
-                                <input type="checkbox" id="char-half-damage">
-                                <label for="char-half-damage">Half Damage</label>
-                                <span class="ab-tip">?<span class="tip-text"><strong>Half Damage</strong>Halves incoming Damage, rounded up (minimum 1).</span></span>
-                            </div>
-                            <div class="ab-item">
-                                <input type="checkbox" id="char-reroll-1s-invuln">
-                                <label for="char-reroll-1s-invuln">Re-roll 1s Invuln</label>
-                                <span class="ab-tip">?<span class="tip-text"><strong>Re-roll Invulnerable 1s</strong>Re-roll invulnerable save rolls of 1.</span></span>
-                            </div>
-                            <div class="ab-item">
-                                <input type="checkbox" id="char-minus-wound">
-                                <label for="char-minus-wound">-1 to Wound</label>
-                                <span class="ab-tip">?<span class="tip-text"><strong>-1 to Wound Rolls</strong>Subtract 1 from wound rolls made against this unit.</span></span>
-                            </div>
-                            <div class="ab-item">
-                                <input type="checkbox" id="char-mod-fnp">
-                                <label for="char-mod-fnp">FNP</label>
-                                <input class="ab-val" type="number" id="char-mod-fnp-value" value="6" min="2" max="6">
-                                <span class="ab-tip">?<span class="tip-text"><strong>Feel No Pain (X+)</strong>Grant FNP via stratagem. Uses the best (lowest) value if character already has native FNP.</span></span>
+                            <div class="ab-col">
+                                <div class="ab-col-head">Damage</div>
+                                <div class="ab-item">
+                                    <input type="checkbox" id="char-half-damage">
+                                    <label for="char-half-damage">Half Damage</label>
+                                    <span class="ab-tip">?<span class="tip-text"><strong>Half Damage</strong>Halves incoming Damage, rounded up (minimum 1).</span></span>
+                                </div>
+                                <div class="ab-item">
+                                    <input type="checkbox" id="char-minus-damage">
+                                    <label for="char-minus-damage">-1 Damage</label>
+                                    <span class="ab-tip">?<span class="tip-text"><strong>-1 Damage</strong>Reduces incoming Damage by 1 (minimum 1).</span></span>
+                                </div>
+                                <div class="ab-item">
+                                    <input type="checkbox" id="char-mod-fnp">
+                                    <label for="char-mod-fnp">FNP</label>
+                                    <input class="ab-val" type="number" id="char-mod-fnp-value" value="6" min="2" max="6">
+                                    <span class="ab-tip">?<span class="tip-text"><strong>Feel No Pain (X+)</strong>Grant FNP via stratagem. Uses the best (lowest) value if character already has native FNP.</span></span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1716,7 +1764,7 @@
 })();
 </script>
 
-<script src="app.js?v=048"></script>
+<script src="app.js?v=050"></script>
 <script>
 // Slide menu
 document.getElementById('menu-open').addEventListener('click', function() {
