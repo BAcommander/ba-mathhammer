@@ -6,6 +6,75 @@ A WH40K damage calculator. Two calculation engines are kept in agreement: an
 
 ---
 
+## v1.0 - Datasheet-style inputs, save confirmations, accuracy + hardening pass (2026-08-06)
+
+### Player-facing patch notes (copy for Discord/YouTube)
+- 🎲 **Type it like the datasheet** - stat boxes now accept the notation printed on your cards.
+  BS/WS, Sv, Invuln, FNP, Anti-X and Crit boxes take "3+" as well as "3"; AP takes "-1" as
+  well as "1"; dice values work with spaces ("D6 + 3"); Sustained Hits accepts "D3+1". Before
+  this, several of those silently fell back to a default - a Demolisher with "D6 + 3" attacks
+  was being calculated as ONE attack, and an AP typed as "-2" actually IMPROVED the target's
+  save. If a result ever looked weirdly low, this was probably why.
+- 💾 **Saving feels safe now** - saving under an existing name offers to update that record
+  instead of blocking; every save/update pops a small confirmation toast; and if your browser
+  storage is full you get told, instead of a fake success. Weapon card Save also remembers
+  its library link after a refresh (Upd/Del no longer vanish).
+- 🎯 **Averaged engine accuracy** (the dice-sim view was always the exact reference, and the
+  averaged view now tracks it much closer):
+  - Attached-character damage from big multi-damage weapons no longer massively overshoots -
+    the maths now models overkill waste when deciding the unit is wiped (a D6-damage volley
+    used to "kill" a bodyguard the dice sim said took ~30% damage)
+  - Re-roll 1s + Re-roll N together now stack like the dice do (was up to -21% wounds)
+  - Re-roll N Wounds is now correct alongside Lethal Hits / Sustained Hits
+- 📦 **Import/export hardening** - imported files are validated (a corrupted or malicious
+  file can no longer wedge the app on every page load), and your weapon-card links survive
+  restoring a backup on a fresh machine.
+- 🧰 Smaller fixes: clearing a character's Invuln box now means "no invuln" (was silently
+  4++), clearing a Models box no longer silently drops that weapon, first visit starts with
+  Battlegroups ON to match the Clear buttons, and the external CDN scripts are pinned with
+  integrity hashes.
+- 🛒 **BA Commander Store** - new Store button in the header (and slide-out menu) linking to
+  the official merch shop: https://ba-commander-shop.fourthwall.com/
+
+### Added
+- **Datasheet notation parsing**: roll-target inputs (profile BS/WS; defender and character
+  Sv/Invuln/FNP; ability values like Anti-X, Crit on X+, FNP mod) are now `type="text"`
+  `inputmode="numeric"` so "3+" survives to the parser (`parseInt` strips the trailing `+`;
+  `collectProfileRules` still clamps configured min/max). AP fields accept negatives - both
+  engines read `Math.abs(...)`. `parseSustained`/`rollSustainedValue` accept `NdX+M`.
+- **`resolveSaveName`** shared save-name flow: clash -> "already exists. Update it?" dialog
+  (Update overwrites in place, keeping id + stored name; decline reopens the name modal).
+- **`showSaveToast`** (`#save-toast`, textContent-only, `aria-live=polite`) fired from all
+  save/update paths; `putPresets` now returns success and `storageError()` reports failures.
+- **SRI**: integrity + crossorigin on the two Firebase script tags and the dynamically loaded
+  html2canvas (`loadScript(src, integrity)`).
+
+### Fixed
+- **Dice parsers** tolerate internal whitespace ("D6 + 3"); sanity cap `num<=50, sides<=1000`
+  in BOTH engines (a hostile "9999D6" import used to hang the analytic convolution).
+- **Analytic character spill**: unit-wipe threshold and per-character chaining now use the
+  `expectedInstancesToKill` DP on the pooled (per-character re-modified) damage pmf instead of
+  totalHP / mean damage, so per-model overkill waste is respected. Removes the large
+  multi-damage overstatement (a reported-dead character vs ~29% in the sim); remaining bias is
+  the documented deterministic-mean Jensen underestimate near the threshold.
+- **Analytic re-roll branches**: new combined Re-roll 1s + Re-roll N branch for hits and
+  wounds (free re-roll on 1s, budget spent on the other failures - mirrors the sim); Re-roll N
+  Wounds trials pool corrected to the actual wound dice (normal hits + sustained extras;
+  lethal auto-wounds never roll), fixing +7%/-4% drift with Lethal/Sustained.
+- **Import**: `state` blob validated (plain object, profiles capped at 20 and type-checked -
+  a 500k-profile file used to re-hang the app on EVERY load until site data was cleared);
+  preset names coerced to strings (a non-string name aborted the whole import silently);
+  category lists capped at 500; `state.profiles[].weaponPresetId` remapped to the freshly
+  assigned weapon ids so card->library ties survive a backup restore.
+- **Persistence**: weapon Save/Delete now `saveState()` so the card's library tie survives
+  refresh; unticked Sustained value text survives save/load round-trips (captures keep the
+  raw text; restore skips legacy `''`); first visit keeps both Battlegroup toggles ON;
+  after a clash-update the name field syncs to the stored preset name; character Invuln
+  empty-box fallback fixed to 0 (was 4); profile Models empty-box fallback fixed to 1 (was
+  0, which silently dropped the weapon); defender models clamped to 500 (display-loop DoS).
+
+---
+
 ## v0.6 - Profile toggles, crit-fishing, points efficiency, leader + support (2026-07-28)
 
 ### Player-facing patch notes (copy for Discord/YouTube)

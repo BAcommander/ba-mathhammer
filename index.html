@@ -110,6 +110,23 @@
         }
         .yt-btn:hover { background: #e00; }
         .yt-btn svg { flex-shrink: 0; }
+        /* Store pill — .header-links .store-btn out-specifies the generic .header-links a color */
+        .header-links .store-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.15s;
+        }
+        .header-links .store-btn:hover { background: var(--accent-dim); color: var(--accent-hover); }
+        .store-btn svg { flex-shrink: 0; }
 
         .wrap {
             max-width: 1500px;
@@ -793,6 +810,27 @@
         }
         .btn-preset-update:hover { border-color: #f0a030; color: #f0a030; }
 
+        /* --- Save toast --- */
+        #save-toast {
+            position: fixed;
+            left: 50%;
+            bottom: 28px;
+            transform: translateX(-50%) translateY(10px);
+            background: #1a1a1a;
+            border: 1px solid var(--accent);
+            color: var(--text-primary);
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s, transform 0.2s;
+            z-index: 10000;
+        }
+        #save-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        #save-toast .toast-name { color: var(--accent); font-weight: 600; }
+
         /* --- Preset Modal --- */
         .preset-modal-overlay {
             display: none;
@@ -1337,6 +1375,10 @@
             <div class="stat-item">Probability Calcs: <span class="stat-val" id="total-prob-calcs">-</span></div>
         </div>
         <div class="header-links">
+            <a href="https://ba-commander-shop.fourthwall.com/" target="_blank" rel="noopener" class="store-btn" title="BA Commander merch store">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                Store
+            </a>
             <a href="https://www.youtube.com/@ba_commander" target="_blank" rel="noopener" class="yt-btn">
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31.5 31.5 0 0 0 0 12a31.5 31.5 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31.5 31.5 0 0 0 24 12a31.5 31.5 0 0 0-.5-5.8zM9.6 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg>
                 BA Commander
@@ -1352,6 +1394,7 @@
 <div class="menu-panel" id="menu-panel">
     <button class="menu-close" id="menu-close">&times;</button>
     <div class="menu-content">
+        <p><a href="https://ba-commander-shop.fourthwall.com/" target="_blank" rel="noopener">BA Commander Store</a></p>
         <p><a href="#" id="menu-patch-notes">Patch Notes</a></p>
         <p><a href="about.html">About BA Mathhammer</a></p>
         <p>Please report any bugs or feedback on the <a href="https://discord.gg/uUHaGtNAZQ" target="_blank" rel="noopener">BAC Discord</a></p>
@@ -1360,7 +1403,7 @@
 
 <div class="wrap">
     <div class="title-row">
-        <h1 class="page-title">Damage Calculator v0.6</h1>
+        <h1 class="page-title">Damage Calculator v1.0</h1>
         <span class="edition-badge">11th Edition</span>
     </div>
     <p class="page-subtitle">Space Combat in a Future Far Far Away</p>
@@ -1529,15 +1572,15 @@
                     </div>
                     <div class="field">
                         <label>Save</label>
-                        <input type="number" id="defender-save" value="3" min="2" max="7">
+                        <input type="text" inputmode="numeric" id="defender-save" value="3" title="3 or 3+ both work">
                     </div>
                     <div class="field">
                         <label>Invuln</label>
-                        <input type="number" id="defender-invuln" value="0" min="0" max="6">
+                        <input type="text" inputmode="numeric" id="defender-invuln" value="0" title="4 or 4+ both work; 0 = none">
                     </div>
                     <div class="field">
                         <label>FNP</label>
-                        <input type="number" id="defender-fnp" value="0" min="0" max="6">
+                        <input type="text" inputmode="numeric" id="defender-fnp" value="0" title="5 or 5+ both work; 0 = none">
                     </div>
                     <div class="field">
                         <label>Wounds</label>
@@ -1612,7 +1655,7 @@
                             <div class="ab-item">
                                 <input type="checkbox" id="def-fnp">
                                 <label for="def-fnp">FNP</label>
-                                <input class="ab-val" type="number" id="def-fnp-value" value="6" min="2" max="6">
+                                <input class="ab-val" type="text" inputmode="numeric" id="def-fnp-value" value="6">
                                 <span class="ab-tip">?<span class="tip-text"><strong>Feel No Pain (X+)</strong>Grant FNP via stratagem. Uses the best (lowest) value if unit already has native FNP.</span></span>
                             </div>
                         </div>
@@ -1640,15 +1683,15 @@
                         </div>
                         <div class="field">
                             <label>Save</label>
-                            <input type="number" id="char-save" value="3" min="2" max="7">
+                            <input type="text" inputmode="numeric" id="char-save" value="3" title="3 or 3+ both work">
                         </div>
                         <div class="field">
                             <label>Invuln</label>
-                            <input type="number" id="char-invuln" value="4" min="0" max="6">
+                            <input type="text" inputmode="numeric" id="char-invuln" value="4" title="4 or 4+ both work; 0 = none">
                         </div>
                         <div class="field">
                             <label>FNP</label>
-                            <input type="number" id="char-fnp" value="0" min="0" max="6">
+                            <input type="text" inputmode="numeric" id="char-fnp" value="0" title="5 or 5+ both work; 0 = none">
                         </div>
                         <div class="field">
                             <label>Wounds</label>
@@ -1716,7 +1759,7 @@
                                 <div class="ab-item">
                                     <input type="checkbox" id="char-mod-fnp">
                                     <label for="char-mod-fnp">FNP</label>
-                                    <input class="ab-val" type="number" id="char-mod-fnp-value" value="6" min="2" max="6">
+                                    <input class="ab-val" type="text" inputmode="numeric" id="char-mod-fnp-value" value="6">
                                     <span class="ab-tip">?<span class="tip-text"><strong>Feel No Pain (X+)</strong>Grant FNP via stratagem. Uses the best (lowest) value if character already has native FNP.</span></span>
                                 </div>
                             </div>
@@ -1745,15 +1788,15 @@
                         </div>
                         <div class="field">
                             <label>Save</label>
-                            <input type="number" id="char2-save" value="3" min="2" max="7">
+                            <input type="text" inputmode="numeric" id="char2-save" value="3" title="3 or 3+ both work">
                         </div>
                         <div class="field">
                             <label>Invuln</label>
-                            <input type="number" id="char2-invuln" value="4" min="0" max="6">
+                            <input type="text" inputmode="numeric" id="char2-invuln" value="4" title="4 or 4+ both work; 0 = none">
                         </div>
                         <div class="field">
                             <label>FNP</label>
-                            <input type="number" id="char2-fnp" value="0" min="0" max="6">
+                            <input type="text" inputmode="numeric" id="char2-fnp" value="0" title="5 or 5+ both work; 0 = none">
                         </div>
                         <div class="field">
                             <label>Wounds</label>
@@ -1821,7 +1864,7 @@
                                 <div class="ab-item">
                                     <input type="checkbox" id="char2-mod-fnp">
                                     <label for="char2-mod-fnp">FNP</label>
-                                    <input class="ab-val" type="number" id="char2-mod-fnp-value" value="6" min="2" max="6">
+                                    <input class="ab-val" type="text" inputmode="numeric" id="char2-mod-fnp-value" value="6">
                                     <span class="ab-tip">?<span class="tip-text"><strong>Feel No Pain (X+)</strong>Grant FNP via stratagem. Uses the best (lowest) value if character already has native FNP.</span></span>
                                 </div>
                             </div>
@@ -1879,8 +1922,8 @@
     <p>BA Mathhammer - a free tool by <a href="https://www.youtube.com/@ba_commander" target="_blank" rel="noopener">BA Commander</a> | All Rights Reserved</p>
 </footer>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" integrity="sha384-sEVIly94UBRLKWdkYoPpSG7GD/e79YHMrxVyZaOk712Ga7+EAw6w1EFi+xBzBdd+" crossorigin="anonymous"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js" integrity="sha384-1/m+A1jVWbD3yiK3/vtFvm1+LjK1WLpSoDY+Kaxppwn/yP9BVSgdHTNQVOjrzUO5" crossorigin="anonymous"></script>
 <script>
 (function() {
     firebase.initializeApp({
@@ -1940,7 +1983,7 @@
 })();
 </script>
 
-<script src="app.js?v=060"></script>
+<script src="app.js?v=063"></script>
 <script>
 // Slide menu
 document.getElementById('menu-open').addEventListener('click', function() {
@@ -2020,5 +2063,7 @@ document.addEventListener('keydown', function(e) {
         </div>
     </div>
 </div>
+
+<div id="save-toast" role="status" aria-live="polite"></div>
 </body>
 </html>
