@@ -33,7 +33,7 @@ A WH40K damage calculator. Two calculation engines are kept in agreement: an
   4++), clearing a Models box no longer silently drops that weapon, first visit starts with
   Battlegroups ON to match the Clear buttons, and the external CDN scripts are pinned with
   integrity hashes.
-- 🛒 **BA Commander Store** - new Store button in the header (and slide-out menu) linking to
+- 🛒 **BA Commander Store** - new Merch button in the header (and slide-out menu) linking to
   the official merch shop: https://ba-commander-shop.fourthwall.com/
 
 ### Added
