@@ -6,6 +6,122 @@ A WH40K damage calculator. Two calculation engines are kept in agreement: an
 
 ---
 
+## v1.01 - Army roster import, Precision, Extra Attacks, Re-roll Attacks (2026-08-11)
+
+### Player-facing patch notes (copy for Discord/YouTube)
+- 📥 **Import your army from New Recruit** - no more typing every weapon in by hand. Export your
+  list as JSON from New Recruit (or BattleScribe), hit Import in the header, and pick what you
+  want: weapons go into your weapon library so any card's Load button can pull them, and units
+  become defender presets with Toughness, Save, Invuln, Wounds, model count and points already
+  filled in. A 2000pt list came in as 84 weapons and 53 units in one go.
+  - Weapon keywords come across ticked - Lethal Hits, Devastating Wounds, Sustained Hits
+    (including "Sustained Hits D3"), Torrent, Blast, Psychic, Ignores Cover, Twin-linked, Heavy,
+    Melta, Rapid Fire, Anti-X and Lance (which is the +1 to Wound box).
+  - The situational ones are ticked as printed on the datasheet, so untick what does not apply:
+    Melta and Rapid Fire assume half range, Heavy assumes you moved 3" or less, Lance assumes a
+    charge, and Anti-X assumes the target actually has the keyword.
+  - Precision is the exception: it comes in ticked but set to "Aim: None", because who you snipe
+    is a choice you make per shot, not something the datasheet decides. Importing therefore never
+    changes a result on its own - pick a character on the card when you want to use it.
+  - Anything already in your library is flagged "already saved" and left unticked, so re-importing
+    an updated list will not fill you with duplicates.
+- 🎯 **New weapon ability: Precision** - wounds from that weapon go onto an attached Character
+  straight away, instead of having to wipe the bodyguard unit first. Until now there was no way
+  to touch a character while its unit was alive, so sniping a leader could not be worked out at
+  all. Tick Precision to record that the weapon has it, then use the dropdown to say who you are
+  aiming at THIS shot: "Aim: None" shoots the unit as normal, or pick Char 1 / Char 2. If your
+  target dies mid-volley the rest of the wounds carry on into the other character and then the
+  unit, same as on the table. With no character attached it does nothing either way.
+  - The dice-sim view is the accurate one here. The averaged view is close away from the
+    character's kill threshold, but right at it the averages tip over and call the character dead
+    a bit early - if a result looks borderline, check it in the sim view.
+  - The dice-sim view also reads properly when you are sniping: character rows now say "Chance
+    of Killing Character" instead of "Wiping Unit + Character" (with Precision the character can
+    die while the unit stands), each character shows its average damage taken, and the risk
+    badge counts a successful snipe - no more "Minimal Damage" on a 98% character kill.
+- 🗡️ **New weapon ability: Extra Attacks** - for weapons like a Servo-arm that are swung IN
+  ADDITION to a normal melee weapon. Give it its own card as usual, and tick this so a unit-wide
+  "+X Attacks" from your battlegroup is not applied to it - an Extra Attacks weapon's attacks
+  cannot be modified by other rules. Imports ticked automatically.
+- 🎲 **New weapon ability: Re-roll Attacks** - for weapons with a random Attacks characteristic
+  (D6, D6+3, 2D3 and so on), tick this when a rule lets you re-roll the dice that decide how
+  many attacks you get. Handy for Knights in particular. It sits with the other Damage & Misc
+  abilities on each weapon card. It works the same way as Re-roll Damage: a below-average roll
+  gets re-rolled and you keep the new number (you cannot keep the original). Ticking it on a
+  weapon with a fixed Attacks value does nothing, so it is safe to leave on.
+- 🔢 **"Total Attacks" now shows the fraction** - a D6-attack weapon reads 3.5 instead of being
+  rounded to 4. The maths was always using the true average, only the displayed number was
+  rounded, so your damage numbers do not change. Whole numbers still show without a decimal.
+- ❓ **Points Efficiency now explains itself** - hover the new "?" next to Trade Ratio, Points
+  Destroyed and Points Remaining. Short version: Trade Ratio is the defender points you removed
+  divided by what the attacking unit costs, so 1.00 is an even trade, above 1.00 you came out
+  ahead, and below 1.00 the attacker costs more than it killed. It covers ONE round of attacks,
+  so a unit you expect to shoot for several turns will show a low ratio per round and still
+  trade fine over a game. The "?" bubbles are stripped from clipboard image exports.
+
+### Added
+- **`ABILITY_CONFIG` value inputs can now be a fixed choice**: `val.options: [[value, label], ...]`
+  renders a `<select>` instead of a text box. Everything downstream (collect, apply, save/restore,
+  battlegroup grey-out) already went through `.value`, so no other code changed.
+- **`precision` + `precisionTarget` per-profile ability** (`ABILITY_CONFIG`, `dmg` group).
+  `precisionTarget` is a dropdown: 0 = None (ticked but not aimed - identical to unticked, verified
+  byte-for-byte), 1/2 = that attached character. Splitting "has Precision" from "aiming it this
+  shot" means the roster import can record the keyword without silently changing any result.
+  MC: `precisionCharIndex` picks the target and `applyEventToChar` (extracted from the spill
+  branch, so the two paths cannot drift) resolves it. Analytic: precision profiles are held out
+  of the unit's `dmgPool`, `charPipeline` derives their damage under the character's own
+  defences, and an `overflowFrac` of their instances is added back to the unit for the wounds the
+  character could not absorb. Ignored entirely when no character is attached (verified: unit
+  damage identical ticked vs unticked). Inherits the documented deterministic-mean gap near the
+  character's kill threshold - see CLAUDE.md.
+- **`extraAttacks` per-profile ability** (`ABILITY_CONFIG`, `dmg` group, id `extra-attacks`).
+  Both engines skip `bgPlusAttacks` for a profile carrying it (`calcProfile` and `simProfile`);
+  verified identical - 5 models, A2, battlegroup +2 Attacks gives 20 attacks off / 10 on in both.
+  Per-weapon abilities printed on the weapon itself (Blast, Cleave, Rapid Fire) are deliberately
+  NOT blocked: the RAW carve-out is about *other* rules modifying it.
+- **`rerollAttacks` per-profile ability** (`ABILITY_CONFIG`, `dmg` group, id `reroll-attacks`).
+  Config-driven, so the checkbox, tooltip, ability summary, weapon-library persistence and
+  save/restore come for free.
+- **New Recruit / BattleScribe roster import.** `importData` now sniffs the file: a roster
+  (`obj.roster.forces`) routes to `parseNrRoster` + the picker modal instead of being rejected
+  with "not a BA Mathhammer export file" (which is what players hit first). `parseNrRoster` walks
+  the `selections` tree per top-level unit, collecting `profiles` by `typeName` ("Ranged/Melee
+  Weapons", "Unit"); weapons dedupe case-insensitively by name+melee (New Recruit's own data has
+  `Absolvor Bolt Pistol` / `Absolvor bolt pistol`), units take the most numerous stat line as
+  representative and sum `number` for the model count. `nrWeaponToData` / `nrUnitToData` emit the
+  exact shapes `captureWeaponProfile` / `captureDefenderData` produce, so the entries are
+  indistinguishable from hand-made presets. `NR_MAX_NODES` caps the tree walk (hostile file), and
+  every name/stat is `esc()`d into the picker.
+- **`tipHtml(title, body)`** results-row tooltip helper + shared `TRADE_RATIO_TIP` /
+  `PTS_DESTROYED_TIP` / `PTS_REMAINING_TIP` copy, used by the Points Efficiency rows in BOTH the
+  averaged view and the dice-sim view. Emits the existing `.ab-tip`/`.tip-text` markup, so the
+  delegated hover handler positions it with no extra wiring. Body text is `esc()`d, `\n` -> `<br>`.
+  `copyResultsToClipboard` strips `.ab-tip` from its clone so the bubbles stay out of exports.
+
+### Fixed
+- **In-app Patch Notes swallowed sub-bullets.** `renderPatchNotes` treated an indented `  - `
+  line as a wrapped continuation and glued it onto its parent, so a bullet with sub-points came
+  out as one run-on paragraph with stray hyphens (this release's import bullet was 1482 chars;
+  v1.0's accuracy bullet had the same problem). Nested bullets now render as a nested `<ul>`,
+  styled smaller and dimmer so the headline bullet still leads. The block is also split on
+  `\r?\n` now: with CRLF line endings a trailing `\r` defeats a `$` anchor, because JS `.` does
+  not match a carriage return.
+- **Total Attacks display** used `toFixed(0)`, so a fractional average was rounded (D6 read "4",
+  and Re-roll Attacks on 2D3 still read "4" while the hits below it correctly rose). Now prints
+  one decimal when the value is fractional. Display-only - no engine change.
+
+### Engine notes
+- **Analytic (`calculateBattle`)**: `parseDamage(atkStr)` already returned a RAW re-roll
+  expectation (`reroll`), so the profile's `attacks` now takes `reroll` instead of `avg` when
+  the box is ticked. Attacks enter the maths linearly (`totalAtk = models * modAttacks`), so
+  this substitution is exact rather than an approximation.
+- **Monte-Carlo (`simProfile`)**: the per-model attacks roll re-rolls once when it comes in
+  below `profile.attacks` (the parsed average) - the same threshold the analytic side uses.
+- **Cross-validated** over 2M iterations per case (1, 3, D3, D6, D6+3, 2D6, 2D3+1, D6+2, 3D6):
+  the two engines agree to within 0.03%, and fixed Attacks values are unchanged.
+
+---
+
 ## v1.0 - Datasheet-style inputs, save confirmations, accuracy + hardening pass (2026-08-06)
 
 ### Player-facing patch notes (copy for Discord/YouTube)

@@ -330,6 +330,12 @@
             text-align: center;
         }
         .ab-item .ab-val:focus { border-color: var(--border-focus); outline: none; }
+        /* Fixed-choice ability value (e.g. Precision's target) — wider than the numeric boxes. */
+        .ab-item .ab-sel {
+            width: auto;
+            text-align: left;
+            cursor: pointer;
+        }
         .ab-tip {
             display: inline-flex;
             align-items: center;
@@ -954,6 +960,9 @@
         }
         .patch-entry ul { margin: 0; padding-left: 18px; }
         .patch-entry li { margin-bottom: 6px; }
+        /* Sub-points under a bullet: tighter, dimmer, so the headline bullet still leads. */
+        .patch-entry li ul { margin: 5px 0 0; padding-left: 16px; }
+        .patch-entry li ul li { margin-bottom: 3px; color: var(--text-secondary); font-size: 12px; }
         .patch-entry li strong { color: var(--text); }
         .patch-entry code {
             font-size: 12px;
@@ -1006,6 +1015,66 @@
             padding: 24px;
             font-size: 13px;
         }
+
+        /* --- Army roster import picker --- */
+        .nr-modal-note {
+            padding: 12px 16px;
+            font-size: 12px;
+            line-height: 1.5;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border);
+        }
+        .nr-modal-note strong { color: var(--accent); }
+        .nr-sec {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: #c9a84c;
+            background: var(--bg-primary);
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+        .nr-mini {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-left: 4px;
+            text-transform: uppercase;
+        }
+        .nr-mini:hover { color: var(--accent); border-color: var(--accent); }
+        .nr-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 8px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+        .nr-item:hover { background: #333; }
+        .nr-item input { margin-top: 3px; flex-shrink: 0; }
+        .nr-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+        .nr-name { font-size: 13px; color: var(--text-primary); }
+        .nr-dup {
+            font-size: 10px;
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            padding: 0 4px;
+            text-transform: uppercase;
+        }
+        .nr-meta { font-size: 11px; color: var(--text-secondary); }
+        .nr-from { color: var(--text-muted); }
+        #nr-modal-add:disabled { opacity: 0.45; cursor: default; }
 
         /* --- Clear Button --- */
         .btn-clear {
@@ -1403,14 +1472,14 @@
 
 <div class="wrap">
     <div class="title-row">
-        <h1 class="page-title">Damage Calculator v1.0</h1>
+        <h1 class="page-title">Damage Calculator v1.01</h1>
         <span class="edition-badge">11th Edition</span>
     </div>
     <p class="page-subtitle">Space Combat in a Future Far Far Away</p>
 
     <div class="log-bar">
         <button class="btn-log" id="btn-export-data" title="Download all presets + current setup as a JSON file">Export</button>
-        <button class="btn-log" id="btn-import-data" title="Load presets + setup from a JSON file (merges with existing)">Import</button>
+        <button class="btn-log" id="btn-import-data" title="Load a BA Mathhammer backup, or import weapons + units from a New Recruit / BattleScribe army roster">Import</button>
         <input type="file" id="import-file" accept="application/json,.json" style="display:none">
         <button class="btn-log" id="btn-log">
             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>
@@ -1983,7 +2052,7 @@
 })();
 </script>
 
-<script src="app.js?v=063"></script>
+<script src="app.js?v=068"></script>
 <script>
 // Slide menu
 document.getElementById('menu-open').addEventListener('click', function() {
@@ -2018,6 +2087,21 @@ document.addEventListener('keydown', function(e) {
             <input type="text" id="preset-modal-search-input" placeholder="Search presets...">
         </div>
         <div class="preset-modal-list" id="preset-modal-list"></div>
+    </div>
+</div>
+
+<div class="preset-modal-overlay" id="nr-modal-overlay">
+    <div class="preset-modal">
+        <div class="preset-modal-header">
+            <h3>Import Army Roster</h3>
+            <button class="preset-modal-close" id="nr-modal-close">&times;</button>
+        </div>
+        <div class="nr-modal-note" id="nr-modal-note"></div>
+        <div class="preset-modal-list" id="nr-modal-list"></div>
+        <div class="name-modal-footer">
+            <button class="btn-preset-load" id="nr-modal-cancel">Cancel</button>
+            <button class="btn-preset-save" id="nr-modal-add">Add Selected</button>
+        </div>
     </div>
 </div>
 
