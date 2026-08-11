@@ -30,8 +30,9 @@ A WH40K damage calculator. Two calculation engines are kept in agreement: an
   to touch a character while its unit was alive, so sniping a leader could not be worked out at
   all. Tick Precision to record that the weapon has it, then use the dropdown to say who you are
   aiming at THIS shot: "Aim: None" shoots the unit as normal, or pick Char 1 / Char 2. If your
-  target dies mid-volley the rest of the wounds carry on into the other character and then the
-  unit, same as on the table. With no character attached it does nothing either way.
+  target dies mid-volley the rest of the wounds go back onto the unit - by the rule, the
+  Precision pick ends the moment that character is destroyed, it does not hop to a second
+  character. With no character attached it does nothing either way.
   - The dice-sim view is the accurate one here. The averaged view is close away from the
     character's kill threshold, but right at it the averages tip over and call the character dead
     a bit early - if a result looks borderline, check it in the sim view.
@@ -99,6 +100,13 @@ A WH40K damage calculator. Two calculation engines are kept in agreement: an
   `copyResultsToClipboard` strips `.ab-tip` from its clone so the bubbles stay out of exports.
 
 ### Fixed
+- **Precision overflow now matches the rule ([PRECISION] 24.28).** The sim originally cascaded
+  leftover Precision wounds into the second attached character before the unit. Per RAW the
+  chosen CHARACTER group is the current allocation group only "until that CHARACTER group is
+  destroyed" - then the override ends and normal allocation resumes, so the overflow goes back
+  onto the unit. `precisionCharIndex` now returns -1 once the target is dead (the event falls
+  through to the normal unit path). The analytic engine already sent its `overflowFrac` to the
+  unit's pool, so this also removes a documented engine divergence rather than adding one.
 - **In-app Patch Notes swallowed sub-bullets.** `renderPatchNotes` treated an indented `  - `
   line as a wrapped continuation and glued it onto its parent, so a bullet with sub-points came
   out as one run-on paragraph with stray hyphens (this release's import bullet was 1482 chars;
