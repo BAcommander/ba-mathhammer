@@ -22,9 +22,11 @@ A WH40K damage calculator. Two calculation engines are kept in agreement: an
     point is not a wasted attack any more, it is just one wound the target kept.
   - Both views were fixed together, and the dice-sim view now matches an exact calculation of the
     rule to 3 decimal places. If you do not use FNP anywhere, nothing in your results changes.
-  - The Save Phase "Wounds After FNP" line now has a "?" explaining what it counts: the unsaved
-    wounds that still took at least one wound off the target, rather than wounds that survived a
-    single all-or-nothing roll.
+  - The Save Phase "Wounds After FNP" line has been replaced with **"Damage After FNP"**, with a
+    "?" explaining it. Counting wounds there stopped being useful once FNP is rolled per point -
+    a Damage 3 hit vs a 5+++ target is only shrugged outright 1 time in 27, so the old line barely
+    moved and read like a damage figure. The new line shows the damage that actually survives the
+    FNP rolls, so you can follow unsaved wounds - damage after FNP - effective damage in order.
 
 ### Fixed
 - **FNP is now RAW 24.12 - one roll per wound LOST, applied after the damage modifiers.** Both
