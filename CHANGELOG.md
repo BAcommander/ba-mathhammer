@@ -6,6 +6,58 @@ A WH40K damage calculator. Two calculation engines are kept in agreement: an
 
 ---
 
+## v1.02 - Feel No Pain is now rolled per wound, as written (2026-08-17)
+
+### Player-facing patch notes (copy for Discord/YouTube)
+- 🛡️ **Feel No Pain now works the way the rulebook says it does.** The rule is "each time a model
+  would lose a wound, roll one D6" - one roll for every single point of damage. The calculator was
+  rolling it once per attack instead, so a Damage 3 hit was either fully shrugged or did all 3.
+  Now that same hit rolls three separate FNP saves and can cost the model 0, 1, 2 or 3 wounds.
+  - This changes results, sometimes by a lot, and it goes both ways. Against 3-wound models with
+    a 5+++: a Damage 2 weapon was under-reporting by about 17%, a Damage 6 weapon by about 27%,
+    and a Damage 3 weapon was over-reporting by about 18%. The bigger the weapon's damage compared
+    to the target's wounds, the more the old numbers were wrong.
+  - The reason it mattered so much is overkill. Rolling FNP once per attack made damage
+    all-or-nothing, so wounds got wasted in chunks. Rolling per point spreads it out - a shrugged
+    point is not a wasted attack any more, it is just one wound the target kept.
+  - Both views were fixed together, and the dice-sim view now matches an exact calculation of the
+    rule to 3 decimal places. If you do not use FNP anywhere, nothing in your results changes.
+  - The Save Phase "Wounds After FNP" line now has a "?" explaining what it counts: the unsaved
+    wounds that still took at least one wound off the target, rather than wounds that survived a
+    single all-or-nothing roll.
+
+### Fixed
+- **FNP is now RAW 24.12 - one roll per wound LOST, applied after the damage modifiers.** Both
+  engines rewritten; see CLAUDE.md for the full rules note.
+  - **Analytic** (`calcProfile`): new `applyFnpToPmf(pmf, fnp, cap)` thins the post-modifier
+    damage pmf - damage `d` becomes `Binomial(d, q)` where `q` is the chance a wound is not
+    shrugged. That is exactly equivalent to rolling until the model dies, because the rolls RAW
+    never makes would only have landed on wasted overkill. `instances` is now the count of
+    **unsaved wounds** (it used to be the post-FNP count) and the pmf carries 0-damage outcomes,
+    so `expectedInstancesToKill` gained a `/(1 - p0)` term for instances that never advance the
+    wound track. `applyDamageMods`' `expectedRolls` (the Re-roll N Damage budget) also moved to
+    the pre-FNP wound count, which is when damage is actually rolled.
+  - Values at or above `cap` are lumped into one bucket: exact for the allocation DP (any instance
+    that meets the model's remaining wounds is identical to it) and it bounds the expansion cost
+    for hostile dice strings. The **mean is taken pre-lump** as `mean × q`, so `totalDamage` and
+    the per-weapon breakdown figure stay exact.
+  - **MC** (`runMonteCarlo`): new `applyFnpDamage(dmg, remaining, fnp)` rolls one D6 per point and
+    stops at the model's last wound. Shared by the unit loop and `applyEventToChar` so the unit,
+    spill and Precision paths cannot drift. FNP moved to after the damage roll in both.
+  - `charPipeline` no longer returns `fnpFail` - the character's FNP lives inside its pmf and mean
+    now, so the three call sites (Precision absorb, spill damage, spill-to-kill) dropped it. The
+    unit-wipe threshold likewise divides by the failed-save rate only, since the pooled pmf
+    already accounts for shrugged instances (`instancesToWipe`, renamed from `finalWoundsToWipe`).
+  - Accuracy, vs an exact DP over the RAW rule: the MC engine now matches to 3dp in every case
+    tested. The analytic engine's error on effective damage drops from **-27%…+18%** to **under
+    3%** (the residual is the pre-existing `expectedInstancesToKill` accumulation approximation,
+    already documented). Regression: with FNP off, 42 damage scenarios and 96 character /
+    Precision / sergeant-extra-wound scenarios are **byte-identical** to v1.01.
+- **`FNP_TIP`** added to the shared results-tooltip consts and wired to the Save Phase "Wounds
+  After FNP" row, which now counts unsaved wounds that removed at least one wound.
+
+---
+
 ## v1.01 - Army roster import, Precision, Extra Attacks, Re-roll Attacks (2026-08-11)
 
 ### Player-facing patch notes (copy for Discord/YouTube)
