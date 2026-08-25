@@ -6,6 +6,37 @@ A WH40K damage calculator. Two calculation engines are kept in agreement: an
 
 ---
 
+## v1.03 - Effective Damage can now reach the Sergeant's extra wound (2026-08-25)
+
+### Player-facing patch notes (copy for Discord/YouTube)
+- 🎯 **"Sgt has +1 Wound" now counts in the Effective Damage maths, not just the health bar.**
+  The averaged view was capping Effective Damage at models x wounds, as if every model in the
+  unit had the same wounds - the Sergeant's extra wound could never actually be removed. So
+  attacks that really wipe the unit showed the Sergeant left on half health: 10 Boyz with a
+  2-wound Nob eating eleven unsaved Damage 2 wounds read as 9/10 killed, 90.9% damage, with the
+  Nob's bar stuck at 50%. It now reads 10/10 and 100%, matching what the dice do.
+  - The engine now chews through the regular models first and spends what is left on the
+    Sergeant at his real wound count, the same order the health bar and the dice-sim view use.
+  - The dice-sim view already handled the Sergeant correctly - this brings the averaged view
+    in line with it. If "Sgt has +1 Wound" is unticked, nothing in your results changes.
+
+### Fixed
+- **`effectiveWoundsRemoved` is now sgt-aware.** It takes the `sgtExtra` flag and allocates
+  instances to the `defModels - 1` regular models at `expectedInstancesToKill(pmf, wounds)`
+  each, then spends the remainder on the sergeant at `expectedInstancesToKill(pmf, wounds + 1)`,
+  crediting `wounds + 1` damage for his kill. Previously it used `wounds` for every model, so
+  `effectiveDamage` capped at `defModels x wounds` and could never reach the `totalHP` cap the
+  caller passed in (which DID include the extra wound) - the displayed Models Killed, Damage
+  Done % and model bars all inherited the shortfall. The character-spill wipe threshold and
+  both Monte-Carlo paths were already sgt-aware; this was the one function that missed the
+  toggle.
+- Cross-validated against a Monte-Carlo allocation over 450 scenarios (D1/D2/D3/D6/FNP-thinned
+  pmfs x W1-3 x 1/5/10 models x 1-20 instances, sgt on and off): with the toggle off every
+  result is byte-identical to v1.02; with it on the analytic figure tracks the MC allocation,
+  with only the documented near-wipe approximation of `expectedInstancesToKill` remaining.
+
+---
+
 ## v1.02 - Feel No Pain is now rolled per wound, as written (2026-08-17)
 
 ### Player-facing patch notes (copy for Discord/YouTube)
@@ -27,6 +58,12 @@ A WH40K damage calculator. Two calculation engines are kept in agreement: an
     a Damage 3 hit vs a 5+++ target is only shrugged outright 1 time in 27, so the old line barely
     moved and read like a damage figure. The new line shows the damage that actually survives the
     FNP rolls, so you can follow unsaved wounds - damage after FNP - effective damage in order.
+- 🎲 **Avg Wound Chance now shows what the dice actually need, when Lethal Hits is on.** That row
+  is the share of ALL your hits that turn into wounds, and Lethal Hits auto-wounds skip the wound
+  roll entirely - so with a quarter of your hits critting, wounding on 5s could read 54.2% and
+  look wrong. It now prints the wound-roll chance in brackets beside it: "54.2% (38.9% on the
+  dice)", with a "?" explaining the two numbers. Nothing about the maths changed, only what is
+  displayed, and the brackets only appear when Lethal Hits is actually generating auto-wounds.
 
 ### Fixed
 - **FNP is now RAW 24.12 - one roll per wound LOST, applied after the damage modifiers.** Both
@@ -57,6 +94,16 @@ A WH40K damage calculator. Two calculation engines are kept in agreement: an
     Precision / sergeant-extra-wound scenarios are **byte-identical** to v1.01.
 - **`FNP_TIP`** added to the shared results-tooltip consts and wired to the Save Phase "Wounds
   After FNP" row, which now counts unsaved wounds that removed at least one wound.
+
+### Changed
+- **Wound Phase "Avg Wound Chance" now carries the raw wound-roll chance in brackets.** The
+  displayed value is the aggregate `totalWounds / totalHits`, which Lethal Hits inflates because
+  auto-wounds never roll a die (S5 vs T12 with +1 to Wound and Re-roll 1s = 38.9% on the dice,
+  but 54.2% of hits once 25% of them auto-wound). `calcProfile` now also returns `woundDice`
+  (`hitsToRoll`) and `autoWounds`; the combined result adds a wound-die-weighted
+  `woundRollChance`, shown as `(38.9% on the dice)` only when `autoWounds > 0`. Display layer
+  only - no engine maths touched, so the MC engine needs no matching change. New
+  `WOUND_CHANCE_TIP` on the row. Cache-bust v071 -> v072.
 
 ---
 
