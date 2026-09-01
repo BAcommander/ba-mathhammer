@@ -6,6 +6,62 @@ A WH40K damage calculator. Two calculation engines are kept in agreement: an
 
 ---
 
+## v1.04 - Effective Damage no longer throws away damage on models that survive (2026-09-01)
+
+### Player-facing patch notes (copy for Discord/YouTube)
+- 🩸 **Effective Damage was under-reporting whenever your Damage does not divide evenly into
+  the target's Wounds.** The classic case: Damage 2 into 3-wound models. Two hits kill a
+  Terminator and waste 1 damage, so the old maths decided every wound was only worth 1.5 and
+  charged that waste even to a single hit that killed nobody. Five Bolt Rifles into Terminators
+  read 2.2 raw damage but only 1.7 Effective Damage, when one wound landing on a fresh
+  Terminator really does remove a full 2. It now reads 1.9, which is what the dice give.
+- ⚔️ **Overkill is now only charged when a model actually dies.** Damage sitting on a wounded
+  survivor counts in full, as it should. Nothing else about how overkill works has changed:
+  damage still does not spill from a dying model onto the next one.
+- 📊 **Models Killed is more honest too.** The old maths turned "damage done" into fractional
+  kills at a flat exchange rate, which ran ahead of reality. Averaged over a big test grid it
+  was out by 0.13 models per calculation; it is now out by 0.011.
+- ✅ **Nothing changes when Damage divides evenly into Wounds.** Damage 1 or Damage 3 into
+  3-wound models were already exact and give the same numbers as before. The dice-sim view is
+  unchanged - the averaged view has moved to agree with it.
+
+### Fixed
+- **`effectiveWoundsRemoved` now runs a forward DP instead of a renewal estimate.** The old
+  version computed `kills = instances / expectedInstancesToKill(pmf, W)` and reported
+  `kills x W`. That is the long-run exchange rate, so it smeared each killing blow's overkill
+  evenly across every instance, including instances landing on an untouched model that waste
+  nothing. It also assumed `E[floor(N/k)] = E[N]/k`, which is badly wrong when the number of
+  wounds getting through is comparable to the wounds needed per kill.
+  The replacement walks a distribution over `(model index, wounds left on that model)` one
+  instance at a time and accumulates
+  `E[effective] = sum_n P(N >= n) * E[damage applied by instance n]`. That identity is exact
+  because the damage rolls are independent of how many wounds got through, so the state after
+  `n-1` instances is just the chain run `n-1` steps. Overkill is charged only on the instance
+  that actually kills, and the unit's model count caps the walk, so the old near-wipe
+  overestimate goes as well. `effectiveKills` now falls out of the same DP.
+- The unsaved-wound count `N` is modelled as `Poisson(instances)`. Fed the true count
+  distribution the DP is exact to 0.0% in every case tested, so this is the only remaining
+  source of error in the figure.
+- `renewalWoundsRemoved` keeps the old formula as a fallback for pathological loadouts
+  (more than 400 unsaved wounds, or a DP too large to walk), where the two agree to well
+  under 1% anyway.
+- Cross-validated by extracting the shipped `app.js` functions into a Node harness and
+  comparing against a full dice pipeline (random Attacks, sustained hits, crits, saves, FNP,
+  mixed weapon profiles) over 5405 scenarios at 30k iterations each. Mean error on Effective
+  Damage drops from 4.82% to 0.72% and worst case from 35.5% to 10.6%; mean error on Models
+  Killed drops from 0.131 to 0.011. The remaining worst cases are all a single attacker model
+  firing very few, very high damage shots at one big multi-wound model, where the Poisson
+  count assumption is weakest. Fixing those would need the real variance of the wound count
+  plumbed through every ability, which is not worth a third parallel model to keep in step -
+  the dice-sim view is the exact reference there.
+
+### Known limitations (unchanged)
+- The character-spill wipe threshold and the Precision overflow split still use
+  `expectedInstancesToKill` as a deterministic mean, with the Jensen-gap behaviour documented
+  in v1.0 and v1.01. This release only fixes the unit's own Effective Damage and Models Killed.
+
+---
+
 ## v1.03 - Effective Damage can now reach the Sergeant's extra wound (2026-08-25)
 
 ### Player-facing patch notes (copy for Discord/YouTube)
