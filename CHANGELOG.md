@@ -6,6 +6,47 @@ A WH40K damage calculator. Two calculation engines are kept in agreement: an
 
 ---
 
+## v1.05 - Sergeant extra wounds are configurable; roster import keeps same-named weapons (2026-09-02)
+
+### Player-facing patch notes (copy for Discord/YouTube)
+- 🟢 **"Sgt has +1 Wound" is now "Sgt has +N W on M model(s)".** Ork Nobs are W3 against the
+  Boyz' W1, and a 20-Boy mob carries two of them, so a flat +1 on one model could not
+  represent the unit. Set how many extra wounds the beefy models have and how many of them
+  there are. The default is still +1 on 1 model, and old saves and presets load exactly as
+  before.
+- 🎯 **The beefy models are always allocated last**, after the regular bodies, in both the
+  averaged view and the dice-sim view. The model bars label each one ("Sgt 1", "Sgt 2").
+  Thanks to Tixed for the report.
+- 🔧 **Two weapons with the same name but different stats no longer collapse into one on
+  roster import.** A Captain's Power fist (A5, WS2+) and a Sergeant's Power fist (A3, WS3+)
+  are different profiles, but the New Recruit / BattleScribe import only kept whichever one
+  came first in the file and silently dropped the other. Both now come through.
+- 🏷️ **Same-name variants are tagged with the unit they came from**, so the picker and your
+  weapon library can tell them apart: "Power fist (Captain)" and "Power fist (Intercessor
+  Squad)". A weapon with only one stat line across your whole army keeps its plain name,
+  exactly as before.
+- Thanks to Neoku771 for the report and the roster file.
+
+### Changed
+- The sergeant toggle is now `readSgtExtra(defModels)` -> `{ n, count }` (unticked = `{0, 0}`;
+  `n` clamped 1..20, `count` clamped 1..defModels). `sgtUnitHP` and `sgtModelWounds(i, ...)`
+  replace the scattered `(sgtExtra && i === defModels - 1) ? wounds + 1 : wounds` ternaries in
+  the analytic DP (`effectiveWoundsRemoved`, whose stride is now `W + n`), the renewal
+  fallback, the wipe threshold for character spill, the model-bar display and the Monte-Carlo
+  allocation loop. The `count` beefy models occupy the last `count` indices. State and presets
+  gain `sgtExtraValue` / `sgtExtraCount` (strings, default `'1'`); the roster import emits
+  them too. With the box ticked and both fields at 1 every number is identical to v1.04.
+
+### Fixed
+- `parseNrRoster` de-duplicated weapons on `name|melee` alone. The key now includes the stat
+  line (`nrStatKey`: A, BS, WS, S, AP, D, Keywords - Range is deliberately left out because the
+  calculator does not model it). Identical lines still collapse to one entry. When a name has
+  more than one distinct stat line, each variant's name gets a ` (unit)` suffix from the unit
+  it was first seen on; if two variants come from the same unit, the stat summary is appended
+  as well so the names stay unique.
+
+---
+
 ## v1.04 - Effective Damage no longer throws away damage on models that survive (2026-09-01)
 
 ### Player-facing patch notes (copy for Discord/YouTube)

@@ -1474,7 +1474,7 @@
 
 <div class="wrap">
     <div class="title-row">
-        <h1 class="page-title">Damage Calculator v1.04</h1>
+        <h1 class="page-title">Damage Calculator v1.05</h1>
         <span class="edition-badge">11th Edition</span>
     </div>
     <p class="page-subtitle">Space Combat in a Future Far Far Away</p>
@@ -1663,10 +1663,14 @@
                     </div>
                 </div>
 
-                <div class="toggle-row" style="margin: 8px 0;">
+                <div class="ab-item" style="margin: 8px 0; padding-left: 0;">
                     <input type="checkbox" id="sgt-extra-wound">
-                    <label for="sgt-extra-wound">Sgt has +1 Wound</label>
-                    <span class="ab-tip">?<span class="tip-text"><strong>Sergeant Extra Wound</strong>The last model alive (Sergeant) has 1 extra wound compared to the rest of the squad.</span></span>
+                    <label for="sgt-extra-wound">Sgt has +</label>
+                    <input class="ab-val" type="number" id="sgt-extra-wound-value" value="1" min="1" max="20" title="Extra wounds per sergeant">
+                    <label for="sgt-extra-wound-value">W on</label>
+                    <input class="ab-val" type="number" id="sgt-extra-count" value="1" min="1" max="500" title="How many models have the extra wounds">
+                    <label for="sgt-extra-count">model(s)</label>
+                    <span class="ab-tip">?<span class="tip-text"><strong>Sergeant Extra Wounds</strong>Some models in the squad have more wounds than the rest - a Space Marine Sergeant has +1, an Ork Nob has +2 over the Boyz. Set how many extra wounds and how many models get them (a 20-Boy mob can carry two Nobs). They are allocated last, after the regular models.</span></span>
                 </div>
 
                 <div class="abilities-block">
@@ -2054,7 +2058,7 @@
 })();
 </script>
 
-<script src="app.js?v=074"></script>
+<script src="app.js?v=076"></script>
 <script>
 // Slide menu
 document.getElementById('menu-open').addEventListener('click', function() {
