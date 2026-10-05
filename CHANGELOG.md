@@ -6,6 +6,35 @@ A WH40K damage calculator. Two calculation engines are kept in agreement: an
 
 ---
 
+## v1.06 - Models Killed no longer rounds down a near-wipe (2026-10-05)
+
+### Player-facing patch notes (copy for Discord/YouTube)
+- 💀 **"Models Killed" now shows the real average, to one decimal.** It used to fill the
+  Effective Damage into the models one at a time and only count the full ones, so a result
+  that read 99% Damage Done could still say "4 / 5". That was a display problem only - the
+  damage maths underneath was right all along. The same calculation now reads "4.9 / 5".
+- 🧮 **Why a combined loadout kills fewer than the sum of its parts.** Running each weapon
+  on its own measures it against a fresh, full-strength unit, so adding those kill counts
+  together kills the same model several times. Together, the weapons can only kill the models
+  that exist, and the dice sometimes leave one standing - so five Assault Terminators with a
+  Chaplain and Ancient into five Terminators read 4.9 / 5, not the 6 or 7 you get by adding
+  the single-weapon runs. Hover the new "?" next to Models Killed for the explanation in-app.
+- 📒 **The calc history and the results panel now agree** on the kill count - the history
+  was already rounding to the nearest model while the panel rounded down.
+- Thanks to Joey and VintageFlanker for the reports.
+
+### Fixed
+- `displayResults` derived "Models Killed" by walking `dispDmg` through `sgtModelWounds` and
+  counting only fully-filled models (a floor), ignoring the engine's fractional
+  `combined.effectiveKills`. It now shows `effectiveKills` (capped at `defModels`) via the new
+  `formatKills` (one decimal, trailing `.0` dropped); the fill walk remains only as a fallback
+  when `effectiveKills` is absent. The calc-log line uses the same formatter instead of
+  `Math.round`. `MODELS_KILLED_TIP` is wired through `tipHtml` on the row; the compact
+  clipboard export reads the `.r-val` text, so it picks up the new format unchanged. The
+  model bars still fill the average damage sequentially - the tooltip now says so.
+
+---
+
 ## v1.05 - Sergeant extra wounds are configurable; roster import keeps same-named weapons (2026-09-02)
 
 ### Player-facing patch notes (copy for Discord/YouTube)
