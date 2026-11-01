@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BA Mathhammer - Damage Calculator</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" href="favicon.png">
     <meta name="description" content="Free mathhammer damage calculator. Calculate expected damage, wounds, and models killed for any unit matchup.">
     <meta name="keywords" content="mathhammer, damage calculator, combat calculator, wounds calculator, probability calculator">
     <style>
@@ -488,10 +490,11 @@
         .risk-icon { margin-right: 6px; }
         .prob-summary-row {
             display: flex;
-            gap: 16px;
+            flex-wrap: wrap; /* three stats on desktop (Avg Damage / Avg Overkill / Wipe), stacked on phones */
+            gap: 0 16px;
             margin-bottom: 4px;
         }
-        .prob-summary-row .big-stat { flex: 1; }
+        .prob-summary-row .big-stat { flex: 1 1 180px; }
         .prob-section { margin-top: 18px; }
         .prob-title {
             font-size: 11px;
@@ -1474,7 +1477,7 @@
 
 <div class="wrap">
     <div class="title-row">
-        <h1 class="page-title">Damage Calculator v1.06</h1>
+        <h1 class="page-title">Damage Calculator v1.07</h1>
         <span class="edition-badge">11th Edition</span>
     </div>
     <p class="page-subtitle">Space Combat in a Future Far Far Away</p>
@@ -1537,6 +1540,7 @@
                                 <div class="ab-item"><input type="checkbox" id="bg-devastating-wounds"><label for="bg-devastating-wounds">Devastating Wounds</label><span class="ab-tip">?<span class="tip-text"><strong>Devastating Wounds</strong>Critical wounds bypass saving throws (incl. invulnerable). Pseudo-mortal-wounds: damage reduction still applies and they don't spill between models.</span></span></div>
                                 <div class="ab-item"><input type="checkbox" id="bg-plus-strength"><label for="bg-plus-strength">+X Strength</label><input class="ab-val" type="number" id="bg-plus-strength-value" value="1" min="1" max="6"><span class="ab-tip">?<span class="tip-text"><strong>+X Strength</strong>Add X to the Strength characteristic of all weapons.</span></span></div>
                                 <div class="ab-item"><input type="checkbox" id="bg-plus-wound"><label for="bg-plus-wound">+1 to Wound</label><span class="ab-tip">?<span class="tip-text"><strong>+1 to Wound Rolls</strong>Add 1 to wound rolls.</span></span></div>
+                                <div class="ab-item"><input type="checkbox" id="bg-anti"><label for="bg-anti">Anti-X</label><input class="ab-val" type="text" inputmode="numeric" id="bg-anti-value" value="4" placeholder="4+"><span class="ab-tip">?<span class="tip-text"><strong>Anti-Keyword X+ (all weapons)</strong>Unmodified wound rolls of X+ become critical wounds vs matching keywords, for every weapon in the unit - handy for a stratagem that grants Anti-X to the whole unit. A weapon that already has its own Anti-X keeps the better of the two thresholds.</span></span></div>
                                 <div class="ab-item"><input type="checkbox" id="bg-reroll-wounds"><label for="bg-reroll-wounds">Re-roll Wounds / Twin-linked</label><span class="ab-tip">?<span class="tip-text"><strong>Re-roll Wound Rolls (Twin-linked)</strong>Re-roll failed wound rolls. This is what the Twin-linked weapon ability does.</span></span></div>
                                 <div class="ab-item"><input type="checkbox" id="bg-reroll-1s-wound"><label for="bg-reroll-1s-wound">Re-roll 1s Wound</label><span class="ab-tip">?<span class="tip-text"><strong>Re-roll Wound Rolls of 1</strong>Re-roll unmodified wound rolls of 1.</span></span></div>
                             </div>
@@ -2058,7 +2062,7 @@
 })();
 </script>
 
-<script src="app.js?v=077"></script>
+<script src="app.js?v=079"></script>
 <script>
 // Slide menu
 document.getElementById('menu-open').addEventListener('click', function() {

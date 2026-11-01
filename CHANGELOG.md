@@ -6,6 +6,79 @@ A WH40K damage calculator. Two calculation engines are kept in agreement: an
 
 ---
 
+## v1.07 - Blast X, unit-wide Anti-X, Overkill, and a tab icon (2026-11-01)
+
+### Player-facing patch notes (copy for Discord/YouTube)
+- 💥 **Blast now takes a number.** 11th-edition datasheets print Blast 1, Blast 2 and so on,
+  so the Blast box has an X field next to it like Cleave does: +X Attacks per 5 models in the
+  target unit. A weapon that just says "Blast" is Blast 1, which is what every old save,
+  preset and library weapon loads as. Blast and Cleave stay separate boxes because they are
+  separate keywords on the datasheet (ranged vs melee) and the roster import maps each one.
+- 📥 **Roster import reads the number** - "Blast 2" on a New Recruit / BattleScribe file lands
+  as Blast 2, and "Cleave 2" is now picked up as well (it used to be ignored).
+- 🎯 **Anti-X in the attacker battlegroup.** A stratagem that gives the whole unit Anti-X
+  (several Deathwatch ones do) can now be ticked once in the battlegroup's Wound Roll column
+  instead of on every weapon card. Weapon cards with their own Anti-X grey out as usual, and
+  if a weapon's own threshold is better than the battlegroup's, the better one applies.
+- 💀 **New "Overkill" row under Effective Damage.** The per-weapon breakdown adds up what each
+  weapon would do if the target never died; Effective Damage is what the target can actually
+  take. Overkill is the gap: damage past the point a model dies (a Damage 2 hit on a model with
+  1 wound left wastes 1) plus anything landing after the whole unit is already dead. Ten Jump
+  Death Company with a Chaplain into a Rhino read 16.8 on the weapon lines but 9.9 Effective -
+  the new row shows the missing 6.8 instead of leaving you to subtract.
+- 🎲 **"Avg Overkill" in the probability view too**, counted inside every one of the 1,000
+  simulated battles and averaged, so it sits next to Avg Damage.
+- 🩹 Damage shrugged by Feel No Pain is NOT overkill - it never landed. Mortarion's 5+++ shows 0.0
+  overkill from a single-model loadout even though it removes a third of the damage.
+- 📋 Copy to Clipboard (full and compact) and the calc history include the new figure. Older
+  history entries simply lack it. Hover the "?" next to Overkill for the definition in-app.
+- 🪖 **The browser tab has an icon now** - a Blood Angels helmet instead of the blank page.
+- Thanks to Tixed for the Blast, Anti-X and icon suggestions (and the helmet).
+
+### Changed
+- `ABILITY_CONFIG` Blast gains `val: { prop: 'blastValue', id: 'blast-value', min 1, max 6,
+  def 1 }`; both engines multiply the per-5-models bonus by `rules.blastValue || 1`, so a
+  profile without the field (old saves) behaves as Blast 1. `nrRulesFromKeywords` parses
+  `Blast`, `Blast N` and `Cleave N`.
+- Attacker battlegroup gains `anti` / `antiValue` (`#bg-anti`, `#bg-anti-value`, "4+" text
+  input). Wired through `collectAttackerBattlegroup`, `ATK_BG_MAP` (greys out per-card Anti-X),
+  `ATK_BG_ABILITY_KEYS`, state save/restore, `captureAtkBattlegroup`/`restoreAtkBattlegroup`,
+  `getCurrentState` and `clearAttacker`. Old saves and battlegroup presets lack the keys and
+  load as unticked / 4+.
+- The battlegroup-under-profile merge both engines did inline is now one shared
+  `mergeAtkRules(profRules, atkBg)`. `collectProfileRules` emits `antiValue: 0` when the card's
+  Anti-X box is unticked (the Sustained pattern) so the battlegroup's threshold can win the
+  merge; when both are ticked the merge takes the lower threshold. `captureWeaponProfile`
+  re-reads the raw field so a library weapon keeps its typed value.
+- `favicon.png` (64x64, the Discord BABlack emoji) is linked from `index.html` and
+  `about.html`; `build.js` copies it to `dist/` and `deploy.bat` ships it.
+
+### Added
+- `calculateBattle` sets `combined.overkill = max(0, totalDamage - effectiveDamage - sum of
+  character damageTaken)`. `totalDamage` is the per-profile sum, already post-FNP (`modDmg =
+  rawDmg x (1 - fnpPass)`), so FNP-shrugged damage never counts; the character share is a
+  cross-defence approximation (per-weapon totals roll the unit's save) and the sim is the exact
+  reference. `displayResults` renders the row (`OVERKILL_TIP` via `tipHtml`), 0.0 included.
+- `runMonteCarlo` tracks `overkill` per battle and returns `avgOverkill`. The unit's
+  save/damage/FNP roll moved into `rollEventVsUnit`, which rolls FNP for EVERY point (not
+  stopping at the model's last wound - same `applied` distribution, but the surplus is now
+  measurable post-FNP). Wounds that arrive after the unit AND every attached character are dead
+  are now rolled through the unit's defences and charged as overkill instead of being skipped,
+  so the sim agrees with the analytic per-weapon totals. `applyEventToChar` returns the waste on
+  the character's killing blow, counted by both the spill and Precision paths.
+- `displayProbability` shows `Avg Overkill` between Avg Damage and Chance of Wiping Unit;
+  `.prob-summary-row` now wraps so the three stats stack on phones.
+- Compact clipboard export finds the headline rows by label instead of position and folds
+  Overkill into the Killed/Done line. Log lines carry `, N.N overkill` (damage and probability).
+
+### Fixed
+- Per-weapon breakdown said "(1 models)" for a single-model profile.
+- The document-level tooltip hover handlers threw `e.target.closest is not a function` whenever
+  the pointer entered the window (capture-phase mouseenter fires on `document` itself); they now
+  skip non-element targets.
+
+---
+
 ## v1.06 - Models Killed no longer rounds down a near-wipe (2026-10-05)
 
 ### Player-facing patch notes (copy for Discord/YouTube)
@@ -31,7 +104,10 @@ A WH40K damage calculator. Two calculation engines are kept in agreement: an
   when `effectiveKills` is absent. The calc-log line uses the same formatter instead of
   `Math.round`. `MODELS_KILLED_TIP` is wired through `tipHtml` on the row; the compact
   clipboard export reads the `.r-val` text, so it picks up the new format unchanged. The
-  model bars still fill the average damage sequentially - the tooltip now says so.
+  model bars still pour the average damage into the models sequentially (kept on purpose - the
+  maintainer prefers the average-fill picture); the tooltip says so and no longer claims a bar at
+  97% is a model that dies 97% of the time, since 7.9 average damage into W6 models fills the
+  first bar to 100% while that model dies only ~75% of the time.
 
 ---
 
