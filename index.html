@@ -1477,7 +1477,7 @@
 
 <div class="wrap">
     <div class="title-row">
-        <h1 class="page-title">Damage Calculator v1.07</h1>
+        <h1 class="page-title">Damage Calculator v1.08</h1>
         <span class="edition-badge">11th Edition</span>
     </div>
     <p class="page-subtitle">Space Combat in a Future Far Far Away</p>
@@ -1530,7 +1530,7 @@
                                 <div class="ab-col-head">Hit Roll</div>
                                 <div class="ab-item"><input type="checkbox" id="bg-sustained-hits"><label for="bg-sustained-hits">Sustained Hits</label><input class="ab-val" type="text" id="bg-sustained-value" value="1" placeholder="1, D3"><span class="ab-tip">?<span class="tip-text"><strong>Sustained Hits (X)</strong>Critical hits generate extra hits. Supports D3, D6, etc.</span></span></div>
                                 <div class="ab-item"><input type="checkbox" id="bg-lethal-hits"><label for="bg-lethal-hits">Lethal Hits</label><span class="ab-tip">?<span class="tip-text"><strong>Lethal Hits</strong>Critical hits automatically wound the target.</span></span></div>
-                                <div class="ab-item"><input type="checkbox" id="bg-plus-hit"><label for="bg-plus-hit">+1 to Hit</label><span class="ab-tip">?<span class="tip-text"><strong>+1 to Hit Rolls</strong>Add 1 to hit rolls.</span></span></div>
+                                <div class="ab-item"><input type="checkbox" id="bg-plus-hit"><label for="bg-plus-hit">+1 to Hit</label><span class="ab-tip">?<span class="tip-text"><strong>+1 to Hit Rolls</strong>Add 1 to hit rolls. Hit-roll modifiers cap at +1, so this does not stack with a weapon's Heavy or its own +1 to Hit.</span></span></div>
                                 <div class="ab-item"><input type="checkbox" id="bg-reroll-hits"><label for="bg-reroll-hits">Re-roll Hits</label><span class="ab-tip">?<span class="tip-text"><strong>Re-roll Hit Rolls</strong>Re-roll failed hit rolls.</span></span></div>
                                 <div class="ab-item"><input type="checkbox" id="bg-reroll-1s-hit"><label for="bg-reroll-1s-hit">Re-roll 1s Hit</label><span class="ab-tip">?<span class="tip-text"><strong>Re-roll Hit Rolls of 1</strong>Re-roll unmodified hit rolls of 1.</span></span></div>
                                 <div class="ab-item"><input type="checkbox" id="bg-ignores-cover"><label for="bg-ignores-cover">Ignores Cover</label><span class="ab-tip">?<span class="tip-text"><strong>Ignores Cover</strong>Target cannot benefit from cover.</span></span></div>
@@ -2062,7 +2062,7 @@
 })();
 </script>
 
-<script src="app.js?v=079"></script>
+<script src="app.js?v=080"></script>
 <script>
 // Slide menu
 document.getElementById('menu-open').addEventListener('click', function() {

@@ -6,6 +6,134 @@ A WH40K damage calculator. Two calculation engines are kept in agreement: an
 
 ---
 
+## v1.08 - Rules fixes, working character modifiers and a truer Overkill (2026-11-10)
+
+### Player-facing patch notes (copy for Discord/YouTube)
+- 🧢 **Hit-roll bonuses cap at +1.** Heavy and "+1 to Hit" ticked together used to add up to +2
+  (BS 4+ hitting on 2+). The rules cap hit-roll modifiers at +1 and -1, so that is now 3+. The
+  second bonus is not wasted against a -1 to Hit target - it still cancels the penalty. Cover
+  changes the BS itself, so Cover and -1 to Hit still stack.
+- 🎯 **Heavy keeps its bonus on BS 2+ weapons.** A BS 2+ Heavy weapon shooting a target with
+  Cover or -1 to Hit lost the +1 and hit on 3+. The bonus and the penalty now cancel, the same
+  way the plain "+1 to Hit" box already did.
+- ⚖️ **+1 to Wound and -1 to Wound cancel out.** A weapon already wounding on 2+ with +1 to
+  Wound into a -1 to Wound target dropped to 3+. It now stays on 2+, as it should.
+- 🎲 **"Re-roll 1" abilities now work on single-shot weapons.** The main results rounded the
+  expected number of dice to a whole number, so a lone lascannon with Re-roll 1 Damage showed
+  no benefit at all (1.67 damage, now 1.94), and one shot with Re-roll 1 Wound could read
+  higher than a full Re-roll Wounds. The probability view always had this right - the two
+  views now agree.
+- 🧍 **Character Cover, -1 to Hit and -1 to Wound now work.** Those three boxes under an attached
+  character were saved but never used. An attack that lands on a character - a Precision shot,
+  or the spill once the bodyguard is wiped - is now rolled against that character's own boxes,
+  in both the main results and the probability view. They belong to the character alone: a
+  unit with Cover does not hand it to the character unless the character's box (or the
+  defender battlegroup's) is ticked too.
+- 💀 **Overkill no longer counts the wounds a character saved.** With a character attached,
+  the Overkill row treated every wound the character saved as wasted damage. Two 1-wound
+  bodyguards in front of a 30-wound character with a 3+ save read 29.0 Overkill when the dice
+  say 2.0 - it now reads 2.0. Overkill is added up from where the waste really happens: on the
+  unit's models, on the character's killing blow, and on anything left over once everyone is
+  dead. With no character attached the number is exactly what it was. With one, the weapon
+  lines no longer add up to Effective Damage + character damage + Overkill, because the weapon
+  lines assume the unit's save throughout - the "?" on the row explains it.
+- 🛡️ **Attached characters feel the battlegroup's +X AP.** The unit's save used the extra AP but
+  a character taking the spill (or a Precision shot) saved as if it was not there. An AP 0
+  weapon with +3 AP from the battlegroup now hits a character exactly like an AP-3 weapon.
+- 🔭 **Precision aims at the character you picked.** With only Character 2 attached, "Aim:
+  Char 1" sniped Character 2. Aiming at a slot with nobody in it now does nothing - the shots
+  go into the unit, the same as "None".
+- 💾 **An empty character Invuln box stays empty.** Blank means no invulnerable save, but
+  reloading the page, loading a preset, recalling history or importing a backup quietly turned
+  it into a 4++. It now comes back as 0 (none). A character saved before this version may
+  still carry the stray 4 - clear the box and save it again.
+- 📊 **"Avg Hit Chance" can no longer go over 100%.** It counted the extra hits from Sustained
+  Hits as if they were attack dice, so BS 2+ with Sustained Hits 2 read 116.7%. It now shows
+  the share of attacks that hit (83.3%). Display only - the damage was always right.
+- 🔁 **Loading a library weapon clears the old weapon's numbers.** A card that had Blast 3 typed
+  in kept the 3 when you loaded an older saved weapon that just says "Blast". Blast, Cleave,
+  Melta and the other X values now reset to the weapon's own value, or the default if it has
+  none.
+- 🏷️ **Saving a unit with no name asks for one** instead of quietly calling it "Defender", and
+  pressing Upd with the name box empty keeps the preset's existing name.
+- 🧯 **Typos can't freeze the page any more.** A huge Attacks or Sustained Hits value (300000
+  instead of 3) made "Calculate Probability" lock the tab for minutes. It now stops with a
+  message telling you which boxes to check.
+- 🧮 **Odd inputs behave sensibly.** Negative defender Wounds or Models are treated as 1 (a
+  negative model count used to make the probability button do nothing). An Invuln of "1" is
+  read as 2+ in both views - they used to disagree on it. Sustained Hits "0" on a weapon card
+  now means zero in both views too.
+
+### Fixed
+- `expectedCappedRerolls(n, q, N)` interpolates between `floor(n)` and `ceil(n)` dice instead
+  of `Math.round(n)` (new `cappedRerollsWhole` holds the old binomial walk). Exact for a single
+  die and for whole counts; affects Re-roll N Hits / Wounds / Damage in `calcProfile` only -
+  the sim spends a real budget and was already right.
+- New shared roll-target helpers used by BOTH engines, replacing two hand-copied blocks each:
+  `hitTarget(bs, rules)` (Cover on the characteristic, then the NET of Heavy / +1 to Hit /
+  -1 to Hit, clamped at 2+) and `woundTarget(strength, toughness, rules)` (S v T table, then
+  the net of +1 / -1 to Wound, clamped 2..6). The net hit-roll modifier is capped at +1 / -1
+  (Heavy and +1 to Hit used to stack to +2); tooltips for Heavy and +1 to Hit say so.
+- Character hit/wound modifiers (`cover`, `stealth`, `minusWound` from `readCharacter`) are now
+  consumed. `rulesVsCharacter(rules, c)` swaps them in for the unit's; `sameRollMods` skips the
+  work when they match.
+  - Analytic: each profile result carries `vsChar[i]` (a second `calcProfile` under character
+    i's modifiers, or the same object when identical). Precision uses `vsChar` for the aimed
+    character; the post-wipe spill is tracked as a FRACTION of the attack sequence
+    (`spillFrac`) and multiplied by that character's own pre-save wounds. With no character
+    modifiers ticked the numbers are identical to before.
+  - Sim: `simProfile(profile, defender, rules, alloc)` now allocates each wound the moment it
+    is rolled (`alloc.emit`) and asks `alloc.targetOf(rules)` who the next roll would land on,
+    so the hit and wound targets follow the current allocation target. `runMonteCarlo`'s
+    allocation loop became the `targetOf` / `emit` closures (same order, same logic).
+- `attackerAP(ap, rules)` = printed AP + battlegroup +X AP. `calcProfile` returns it as
+  `attackAP` and `calculateBattle` / `runMonteCarlo` feed it to `charEffectiveSave` as the
+  representative AP (was the bare printed AP).
+- `precisionAttachedIndex(rules, slots)` maps the dropdown's character SLOT to its index in the
+  attached list, or -1 when that slot is empty. Used by `calculateBattle` (`isPrecision`,
+  `precAimedAt`), `precisionCharIndex` (now takes `charSlots`) and the sim's `sniped` flags,
+  replacing three copies of a clamp that pointed slot 1 at whoever was attached.
+- `captureCharState` stores an empty Invuln as `'0'` (was `'4'`).
+- Analytic Overkill with an attached character is now a staged SUM in `calculateBattle`
+  (`stagedOverkill`) instead of `totalDamage - effectiveDamage - character damage`, which
+  rolled the unit's save for wounds a character actually saved: (1) the pre-wipe share of the
+  unit profiles' `totalDamage` (`1 - spillFracAtWipe`) plus Precision overflow, minus
+  `effectiveDamage`; (2) each character's killing-blow surplus through its own defences
+  (`charOverkill`); (3) the attacks left once everything is dead (`spillFrac` x unit
+  `totalDamage`), as the sim rolls them. No character attached = the old subtraction,
+  byte-identical. `OVERKILL_TIP` explains the character case.
+- `combined.hitChance` = `(totalHits - sustainedHitCount) / totalAttacks`.
+- `applyWeaponToProfile` writes `c.val.def` when the loaded weapon has no (or a blank) value
+  for an ability, instead of leaving the card's previous value in the field.
+- `PRESET_CATS.def.nameOf` returns `''` for a blank Unit Name (was `'Defender'`), so
+  `resolveSaveName` opens the name modal and `updatePreset` keeps the stored name.
+- `runMonteCarlo` estimates the attack dice per battle (models x (attacks + battlegroup +X +
+  Blast/Cleave/Rapid Fire) x (1 + Sustained average)) and refuses with an info modal when
+  dice x iterations exceeds `MC_DICE_BUDGET` (2e7). Covers plain-integer Attacks, Sustained X
+  and the battlegroup +X Attacks value, none of which the dice-notation caps reached.
+- `readInvuln(id)` (defender + characters, both engines): empty/0 = none, 1 clamps to 2+.
+  `readDefModels()` clamps 1-500; defender and character Wounds floor at 1.
+- `calcProfile` always takes its Sustained multiplier from `parseSustained(rules.sustainedValue)`
+  (the merged string the sim rolls) rather than preferring `sustainedValueParsed`, which was
+  falsy for a card value of "0" and so picked up the battlegroup's number.
+- `build.bat` calls `node "%~dp0build.js"` and stops with BUILD FAILED on a non-zero exit
+  instead of printing "Done".
+
+### Verified
+- Node harness driving the real `calculateBattle` and `runMonteCarlo` (40,000 iterations) on
+  every scenario above: analytic and dice agree to within sampling noise, and each fixed case
+  matches its hand-worked value (e.g. BS2+ Heavy into -1 to Hit 83.3%, BS4+ Heavy and +1 to Hit
+  66.7%, S8 v T4 with +1/-1 to Wound 83.3%, one BS3+ shot wounding on 4+ with Re-roll 1 Wound
+  3.00 = full re-roll, 60 attacks into a character with Cover and -1 to Hit 10.0 vs 20.0 bare).
+- Overkill with a character, analytic vs dice: 2.00 / 2.00 (was 28.96), 78.89 / 78.86 with
+  everything dead, 2.00 / 2.00 with two characters. Where the average sits near a character's
+  death the documented deterministic-mean gap remains (6.4 vs 7.7, 9.5 vs 14.5) - the old
+  formula gave 12.4 and 52.7 on those.
+- Not browser-tested: the weapon-load reset, blank unit name and Invuln save changes touch the
+  form and want a click-through.
+
+---
+
 ## v1.07 - Blast X, unit-wide Anti-X, Overkill, and a tab icon (2026-11-01)
 
 ### Player-facing patch notes (copy for Discord/YouTube)
